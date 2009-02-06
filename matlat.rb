@@ -1,7 +1,7 @@
 class Term
-  def self.name_terms(bind)
-    eval("local_variables", bind).each do |var|
-      value = eval(var, bind)
+  def self.name_terms(env)
+    eval("local_variables", env).each do |var|
+      value = eval(var, env)
       if value.respond_to? :name=
         value.name = var
       end

@@ -86,10 +86,18 @@ def input(x)
   Constant.new(x)
 end
 
+scale = input 1.0
+size = input 72
+pi = input 3.14159
+radians = pi * 2
 count = input 60
 unit = input 1
 calcUnit = input 1000
+
 relativeTime = count * unit * calcUnit
+perimeter = size * scale * radians
+pixel = input(1) / perimeter
+tick = relativeTime * pixel
 
 Term.name_terms(binding)
 puts Term.list_terms(binding).map {|t| t.long}

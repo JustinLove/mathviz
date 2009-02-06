@@ -8,6 +8,17 @@ class Term
     end
   end
   
+  def self.list_terms(env)
+    eval("local_variables", env).map { |var|
+      value = eval(var, env)
+      if (value.kind_of?(Term))
+        value
+      else
+        nil
+      end
+    }.compact
+  end
+  
   def self.binop(op)
     define_method(op) do |c|
       Equation.new(self, op, c)
@@ -79,5 +90,4 @@ v = input 2
 x = u + v
 y = x * 4
 Term.name_terms(binding)
-puts x.long
-puts y.long
+puts Term.list_terms(binding).map {|t| t.long}

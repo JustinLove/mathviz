@@ -1,4 +1,13 @@
 class Equation
+  def self.name_equations(bind)
+    eval("local_variables", bind).each do |var|
+      value = eval(var, bind)
+      if value.respond_to? :name=
+        value.name = var
+      end
+    end
+  end
+  
   attr_accessor :name
 
   def initialize(a, op, b)
@@ -31,11 +40,5 @@ end
 
 x = Equation.new(1, :+, 2)
 y = x * 4
-local_variables.each do |var|
-  value = eval(var)
-  if value.respond_to? :name=
-    value.name = var
-  end
-end
-
+Equation.name_equations(binding)
 puts y.long

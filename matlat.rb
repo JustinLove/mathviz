@@ -33,7 +33,7 @@ class Constant < Term
   end
 
   def long
-    "#{to_f}"
+    "(#{@name} = #{to_f})"
   end
   
   def to_i
@@ -58,7 +58,7 @@ class Equation < Term
   end
 
   def long
-    "(#{@a} #{@op} #{@b} = #{to_f})"
+    "(#{@name} = #{@a} #{@op} #{@b} = #{to_f})"
   end
   
   def to_i

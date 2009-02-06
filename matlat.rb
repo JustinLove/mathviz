@@ -40,11 +40,12 @@ class Constant < Term
   end
 
   def to_s
-    @name || long
+    @name || to_f.to_s
   end
 
   def long
-    "(#{@name} = #{to_f})"
+    n = @name && (@name + " = ")
+    "(#{n}#{to_f})"
   end
   
   def to_i

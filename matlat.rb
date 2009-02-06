@@ -8,15 +8,18 @@ class Term
     end
   end
   
-  attr_accessor :name
+  def self.binop(op)
+    define_method(op) do |c|
+      Equation.new(self, op, c)
+    end
+  end
   
-  def *(c)
-    Equation.new(self, :*, c)
-  end
+  attr_accessor :name
 
-  def +(c)
-    Equation.new(self, :+, c)
-  end
+  binop :+
+  binop :-
+  binop :*
+  binop :/
 end
 
 class Constant < Term

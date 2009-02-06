@@ -1,5 +1,5 @@
 class Term
-  def self.name_equations(bind)
+  def self.name_terms(bind)
     eval("local_variables", bind).each do |var|
       value = eval(var, bind)
       if value.respond_to? :name=
@@ -71,6 +71,6 @@ u = Constant.new(1)
 v = Constant.new(2)
 x = u + v
 y = x * 4
-Term.name_equations(binding)
+Term.name_terms(binding)
 puts x.long
 puts y.long

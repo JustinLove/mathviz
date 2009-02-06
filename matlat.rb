@@ -69,7 +69,8 @@ class Equation < Term
   end
 
   def long
-    "(#{@name} = #{@a} #{@op} #{@b} = #{to_f})"
+    n = @name && (@name + " = ")
+    "(#{n}#{@a} #{@op} #{@b} = #{to_f})"
   end
   
   def to_i
@@ -85,9 +86,10 @@ def input(x)
   Constant.new(x)
 end
 
-u = input 1
-v = input 2
-x = u + v
-y = x * 4
+count = input 60
+unit = input 1
+calcUnit = input 1000
+relativeTime = count * unit * calcUnit
+
 Term.name_terms(binding)
 puts Term.list_terms(binding).map {|t| t.long}

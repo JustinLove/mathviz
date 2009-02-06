@@ -70,8 +70,12 @@ class Equation < Term
   end
 end
 
-u = Constant.new(1)
-v = Constant.new(2)
+def input(x)
+  Constant.new(x)
+end
+
+u = input 1
+v = input 2
 x = u + v
 y = x * 4
 Term.name_terms(binding)

@@ -1,12 +1,18 @@
 class Equation
+  attr_accessor :name
+
   def initialize(a, op, b)
     @a = a
     @op = op
     @b = b
   end
-  
-  def *(c)
-    Equation.new(self, :*, c)
+
+  def to_s
+    @name || long
+  end
+
+  def long
+    "(#{@a} #{@op} #{@b} = #{to_f})"
   end
   
   def to_i
@@ -16,16 +22,11 @@ class Equation
   def to_f
     @a.to_f.__send__(@op, @b.to_f)
   end
-  
-  def to_s
-    @name || long
-  end
 
-  def long
-    "(#{@a} #{@op} #{@b} = #{to_f})"
+  def *(c)
+    Equation.new(self, :*, c)
   end
   
-  attr_accessor :name
 end
 
 x = Equation.new(1, :+, 2)

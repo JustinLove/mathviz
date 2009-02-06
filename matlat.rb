@@ -108,12 +108,16 @@ count = input 60
 unit = input 1
 calcUnit = input 1000
 timeMultiplier = input 1
+delta = input 0.1
 
 relativeTime = count * unit * calcUnit
 perimeter = size * scale * radians
 pixel = input(1) / perimeter
 tick = relativeTime * pixel
 realTime = calcUnit.min(tick.max(1000))
+delay = realTime / timeMultiplier
+threashold = delay * 2
+timeDelta = relativeTime * delta
 
 
 Term.name_terms(binding)

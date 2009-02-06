@@ -1,3 +1,13 @@
+class Numeric
+  def max(b)
+    [self, b].max
+  end
+  
+  def min(b)
+    [self, b].min
+  end
+end
+
 class Term
   def self.name_terms(env)
     eval("local_variables", env).each do |var|
@@ -31,6 +41,8 @@ class Term
   binop :-
   binop :*
   binop :/
+  binop :max
+  binop :min
 end
 
 class Constant < Term
@@ -87,18 +99,22 @@ def input(x)
   Constant.new(x)
 end
 
-scale = input 1.0
-size = input 72
 pi = input 3.14159
 radians = pi * 2
+
+scale = input 1.0
+size = input 72
 count = input 60
 unit = input 1
 calcUnit = input 1000
+timeMultiplier = input 1
 
 relativeTime = count * unit * calcUnit
 perimeter = size * scale * radians
 pixel = input(1) / perimeter
 tick = relativeTime * pixel
+realTime = calcUnit.min(tick.max(1000))
+
 
 Term.name_terms(binding)
 puts Term.list_terms(binding).map {|t| t.long}

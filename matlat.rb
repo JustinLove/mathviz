@@ -1,4 +1,4 @@
-class Equation
+class Term
   def self.name_equations(bind)
     eval("local_variables", bind).each do |var|
       value = eval(var, bind)
@@ -9,8 +9,42 @@ class Equation
   end
   
   attr_accessor :name
+  
+  def *(c)
+    Equation.new(self, :*, c)
+  end
 
+  def +(c)
+    Equation.new(self, :+, c)
+  end
+end
+
+class Constant < Term
+  def initialize(a)
+    super()
+    @a = a
+  end
+
+  def to_s
+    @name || long
+  end
+
+  def long
+    "#{to_f}"
+  end
+  
+  def to_i
+    @a.to_i
+  end
+
+  def to_f
+    @a.to_f
+  end
+end
+
+class Equation < Term
   def initialize(a, op, b)
+    super()
     @a = a
     @op = op
     @b = b
@@ -31,14 +65,12 @@ class Equation
   def to_f
     @a.to_f.__send__(@op, @b.to_f)
   end
-
-  def *(c)
-    Equation.new(self, :*, c)
-  end
-  
 end
 
-x = Equation.new(1, :+, 2)
+u = Constant.new(1)
+v = Constant.new(2)
+x = u + v
 y = x * 4
-Equation.name_equations(binding)
+Term.name_equations(binding)
+puts x.long
 puts y.long

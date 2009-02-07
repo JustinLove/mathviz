@@ -57,9 +57,16 @@ class Term
     g[node] [:label => [node, data].join("\n")]
   end
   
-  @@anon = 'a'
+  @@anon_master = 'a'
   def anon
-    @anon = @anon || @@anon.succ!
+    if (@anon)
+      @anon
+    else
+      @anon = @@anon_master
+      @@anon_master = @@anon_master.succ
+      #puts "#{self.object_id} anon #{@anon}"
+      @anon
+    end
   end
 
   binop :+
@@ -174,4 +181,5 @@ graph = GraphvizR.new 'test'
 ms.to_dot(graph)
 pi.to_dot(graph)
 relativeTime.to_dot(graph)
+realTime.to_dot(graph)
 puts graph.to_dot

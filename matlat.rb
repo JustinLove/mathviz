@@ -1,3 +1,5 @@
+require 'graphviz_r'
+
 class Numeric
   def max(b)
     [self, b].max
@@ -5,6 +7,12 @@ class Numeric
   
   def min(b)
     [self, b].min
+  end
+end
+
+class Object
+  def node
+    to_s
   end
 end
 
@@ -36,6 +44,23 @@ class Term
   end
   
   attr_accessor :name
+  
+  def data
+    to_f
+  end
+  
+  def label
+    [node, data].join("\n")
+  end
+  
+  def to_dot(g)
+    g[node] [:label => [node, data].join("\n")]
+  end
+  
+  @@anon = 'a'
+  def anon
+    @anon = @anon || @@anon.succ!
+  end
 
   binop :+
   binop :-
@@ -78,12 +103,22 @@ class Equation < Term
   end
 
   def to_s
-    @name || long
+    @name || anon
   end
-
+  
   def long
     n = @name && (@name + " = ")
     "(#{n}#{@a} #{@op} #{@b} = #{to_f})"
+  end
+  
+  def data
+    "#{@op} = #{to_f}"
+  end
+  
+  def to_dot(g)
+    super
+    g[@a.node] >> g[node]
+    g[@b.node] >> g[node]
   end
   
   def to_i
@@ -132,3 +167,9 @@ timeDelta = relativeTime * delta
 
 Term.name_terms(binding)
 puts Term.list_terms(binding).map {|t| t.long}
+#Term.list_terms(binding).inject(GraphvizR.new 'dc') {|t, g| t.to_dot(g); g}.to_dot
+graph = GraphvizR.new 'test'
+ms.to_dot(graph)
+pi.to_dot(graph)
+relativeTime.to_dot(graph)
+puts graph.to_dot

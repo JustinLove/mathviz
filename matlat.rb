@@ -175,11 +175,8 @@ timeDelta = relativeTime * delta
 
 
 Term.name_terms(binding)
-puts Term.list_terms(binding).map {|t| t.long}
-#Term.list_terms(binding).inject(GraphvizR.new 'dc') {|t, g| t.to_dot(g); g}.to_dot
-graph = GraphvizR.new 'test'
-ms.to_dot(graph)
-pi.to_dot(graph)
-relativeTime.to_dot(graph)
-realTime.to_dot(graph)
-puts graph.to_dot
+#puts Term.list_terms(binding).map {|t| t.long}
+puts Term.list_terms(binding).inject(GraphvizR.new 'dc') {|g, t|
+  t.to_dot(g)
+  g
+}.to_dot

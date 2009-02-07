@@ -61,8 +61,12 @@ class Term
     :black
   end
   
+  def style
+    :solid
+  end
+  
   def to_dot(g)
-    g[node] [:label => [node, data].join("\n"), :shape => shape, :color => color]
+    g[node] [:label => [node, data].join("\n"), :shape => shape, :color => color, :style => style]
   end
   
   @@anon_master = 'a'
@@ -145,6 +149,14 @@ class Equation < Term
     end
   end
   
+  def style
+    if @name
+      :solid
+    else
+      :dotted
+    end
+  end
+  
   def to_dot(g)
     super
     g[@a.node] >> g[node]
@@ -172,11 +184,11 @@ radians = pi * 2
 scale = input 1.0
 size = input 72
 count = input 60
-unit = input 1
+unit = input 60
 calcUnit = input 1000
 timeMultiplier = input 1
 time = input Time.now
-ms = time + 500
+ms = time + timeMultiplier * (1000)
 
 root_position = time / calcUnit
 unit_position = root_position / unit
@@ -186,7 +198,7 @@ root_to = ms / calcUnit
 unit_to = root_to / unit
 un_to = unit_to / count
 
-relativeTime = count * unit * calcUnit
+relativeTime = calcUnit * unit * count
 diameter = size * scale
 perimeter = diameter * radians
 pixel = input(1) / perimeter
@@ -197,11 +209,17 @@ threashold = delay * 2
 delta = un_to - un_position
 timeDelta = relativeTime * delta
 jump = timeDelta > threashold
+visible = delta > pixel
 
 
 Term.name_terms(binding)
 #puts Term.list_terms(binding).map {|t| t.long}
-puts Term.list_terms(binding).inject(GraphvizR.new 'dc') {|g, t|
+graph = GraphvizR.new 'dc'
+graph.rank :same, [:pixel, :delta]
+graph.rank :same, [:tick, :timeDelta, :threashold]
+graph = Term.list_terms(binding).inject(graph) {|g, t|
   t.to_dot(g)
   g
-}.to_dot
+}
+
+puts graph.to_dot

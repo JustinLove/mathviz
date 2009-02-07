@@ -54,11 +54,15 @@ class Term
   end              
   
   def shape
-    "egg"
+    :ellipse
+  end
+  
+  def color
+    :black
   end
   
   def to_dot(g)
-    g[node] [:label => [node, data].join("\n"), :shape => shape]
+    g[node] [:label => [node, data].join("\n"), :shape => shape, :color => color]
   end
   
   @@anon_master = 'a'
@@ -128,12 +132,16 @@ class Equation < Term
   end
   
   def shape
+    return :box
+  end
+  
+  def color
     case @op
-    when :+: :box;
-    when :-: :parallelogram;
-    when :*: :octagon;
-    when :/: :pentagon;
-    else :invhouse;
+    when :+: :green;
+    when :-: :yellow;
+    when :*: :blue;
+    when :/: :cyan;
+    else :red;
     end
   end
   

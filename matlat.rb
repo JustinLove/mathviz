@@ -75,6 +75,7 @@ class Term
   binop :/
   binop :max
   binop :min
+  binop :>
 end
 
 class Constant < Term
@@ -164,7 +165,8 @@ unit_to = root_to / unit
 un_to = unit_to / count
 
 relativeTime = count * unit * calcUnit
-perimeter = size * scale * radians
+diameter = size * scale
+perimeter = diameter * radians
 pixel = input(1) / perimeter
 tick = relativeTime * pixel
 realTime = calcUnit.min(tick.max(1000))
@@ -172,6 +174,7 @@ delay = realTime / timeMultiplier
 threashold = delay * 2
 delta = un_to - un_position
 timeDelta = relativeTime * delta
+jump = timeDelta > threashold
 
 
 Term.name_terms(binding)

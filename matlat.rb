@@ -88,6 +88,11 @@ class Term
   binop :max
   binop :min
   binop :>
+  binop :<
+  binop :<=
+  binop :>=
+  binop :&
+  binop :|
 end
 
 class Constant < Term
@@ -180,12 +185,12 @@ end
 
 pi = input 3.14159
 radians = pi * 2
+second = input 1
 
 scale = input 1.0
 size = input 72
 count = input 60
-unit = input 60
-second = input 1
+unit = input 1
 calcUnit = second * 1
 timeMultiplier = input 1
 time = input Time.now
@@ -209,11 +214,13 @@ pixel = input(1) / perimeter
 tick = relativeTime * pixel
 realTime = calcUnit.min(tick.max(second))
 delay = realTime / timeMultiplier
-threashold = delay * 2
+threashold = realTime * 2
 delta = un_to - un_position
 timeDelta = relativeTime * delta
-jump = timeDelta > threashold
+big = timeDelta > threashold
 visible = delta > pixel
+normal = delay >= second
+jump = big & normal
 
 
 Term.name_terms(binding)
@@ -226,4 +233,5 @@ graph = Term.list_terms(binding).inject(graph) {|g, t|
   g
 }
 
-puts graph.to_dot
+#puts graph.to_dot
+graph.output('dc.dot', 'dot')

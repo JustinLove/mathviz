@@ -119,6 +119,8 @@ class Equation < Term
     super
     g[@a.node] >> g[node]
     g[@b.node] >> g[node]
+    @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
+    @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)
   end
   
   def to_i

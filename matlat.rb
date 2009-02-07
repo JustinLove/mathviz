@@ -51,10 +51,14 @@ class Term
   
   def label
     [node, data].join("\n")
+  end              
+  
+  def shape
+    "egg"
   end
   
   def to_dot(g)
-    g[node] [:label => [node, data].join("\n")]
+    g[node] [:label => [node, data].join("\n"), :shape => shape]
   end
   
   @@anon_master = 'a'
@@ -123,6 +127,16 @@ class Equation < Term
     "#{@op} = #{to_f}"
   end
   
+  def shape
+    case @op
+    when :+: :box;
+    when :-: :parallelogram;
+    when :*: :octagon;
+    when :/: :pentagon;
+    else :invhouse;
+    end
+  end
+  
   def to_dot(g)
     super
     g[@a.node] >> g[node]
@@ -153,7 +167,7 @@ count = input 60
 unit = input 1
 calcUnit = input 1000
 timeMultiplier = input 1
-time = input 859294
+time = input Time.now
 ms = time + 500
 
 root_position = time / calcUnit

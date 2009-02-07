@@ -194,18 +194,10 @@ unit = input 1
 calcUnit = second * 1
 timeMultiplier = input 1
 time = input Time.now
-frameRate = input 1
-step = second / frameRate
-passed = step * timeMultiplier
-ms = time + passed
 
 root_position = time / calcUnit
 unit_position = root_position / unit
 un_position = unit_position / count
-
-root_to = ms / calcUnit
-unit_to = root_to / unit
-un_to = unit_to / count
 
 relativeTime = calcUnit * unit * count
 diameter = size * scale
@@ -215,6 +207,18 @@ tick = relativeTime * pixel
 realTime = calcUnit.min(tick.max(second))
 delay = realTime / timeMultiplier
 threashold = realTime * 2
+
+frameRate = input 1
+step = second / frameRate
+#step = delay
+#passed = step * timeMultiplier
+passed = delay * timeMultiplier
+ms = time + passed
+
+root_to = ms / calcUnit
+unit_to = root_to / unit
+un_to = unit_to / count
+
 delta = un_to - un_position
 timeDelta = relativeTime * delta
 big = timeDelta > threashold
@@ -227,7 +231,7 @@ Term.name_terms(binding)
 #puts Term.list_terms(binding).map {|t| t.long}
 graph = GraphvizR.new 'dc'
 graph.rank :same, [:pixel, :delta]
-graph.rank :same, [:tick, :timeDelta, :threashold]
+#graph.rank :same, [:tick, :timeDelta, :threashold]
 graph = Term.list_terms(binding).inject(graph) {|g, t|
   t.to_dot(g)
   g

@@ -45,12 +45,24 @@ class Term
   
   attr_accessor :name
   
+  def to_s
+    @name || anon
+  end
+  
+  def node
+    to_s
+  end
+  
   def data
     to_f
   end
   
   def label
-    [node, data].join("\n")
+    if (@name)
+      [node, data].join("\n")
+    else
+      data.to_s
+    end
   end              
   
   def shape
@@ -62,11 +74,15 @@ class Term
   end
   
   def style
-    :solid
+    if @name
+      :solid
+    else
+      :dotted
+    end
   end
   
   def to_dot(g)
-    g[node] [:label => [node, data].join("\n"), :shape => shape, :color => color, :style => style]
+    g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
   
   @@anon_master = 'a'
@@ -101,10 +117,6 @@ class Constant < Term
     @a = a
   end
 
-  def to_s
-    @name || to_f.to_s
-  end
-
   def long
     n = @name && (@name + " = ")
     "(#{n}#{to_f})"
@@ -122,15 +134,19 @@ end
 class Equation < Term
   def initialize(a, op, b)
     super()
-    @a = a
+    @a = term(a)
     @op = op
-    @b = b
-  end
-
-  def to_s
-    @name || anon
+    @b = term(b)
   end
   
+  def term(x)
+    if (x.kind_of?(Term))
+      x
+    else
+      Constant.new(x)
+    end
+  end
+
   def long
     n = @name && (@name + " = ")
     "(#{n}#{@a} #{@op} #{@b} = #{to_f})"
@@ -151,14 +167,6 @@ class Equation < Term
     when :*: :blue;
     when :/: :cyan;
     else :red;
-    end
-  end
-  
-  def style
-    if @name
-      :solid
-    else
-      :dotted
     end
   end
   

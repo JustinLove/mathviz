@@ -196,7 +196,7 @@ radians = pi * 2
 second = input 1000
 
 scale = input 1.0
-size = input 72
+size = input 172
 count = input 10
 unit = input 1
 calcUnit = input 10

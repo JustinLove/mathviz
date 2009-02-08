@@ -198,7 +198,7 @@ scale = input 1.0
 size = input 172
 count = input 10
 unit = input 1
-calcUnit = input 10
+calcUnit = input 100
 timeMultiplier = input 1
 time = input((Time.now.to_f * 1000).floor)
 

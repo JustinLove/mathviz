@@ -192,7 +192,6 @@ def input(x)
 end
 
 pi = input 3.14159
-radians = pi * 2
 second = input 1000
 
 scale = input 1.0
@@ -210,7 +209,7 @@ un_position = unit_position / count
 resolution = unit * count
 relativeTime = calcUnit * resolution
 diameter = size * scale
-perimeter = diameter * radians
+perimeter = diameter * pi
 pixel = input(1) / perimeter
 tick = relativeTime * pixel
 realTime = calcUnit.min(tick.max(1000))

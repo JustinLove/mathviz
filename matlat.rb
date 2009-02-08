@@ -185,15 +185,15 @@ end
 
 pi = input 3.14159
 radians = pi * 2
-second = input 1
+second = input 1000
 
 scale = input 1.0
 size = input 72
 count = input 10
 unit = input 1
-calcUnit = second * 0.1
+calcUnit = input 10
 timeMultiplier = input 1
-time = input Time.now
+time = input((Time.now.to_f * 1000).floor)
 
 root_position = time / calcUnit
 unit_position = root_position / unit
@@ -205,7 +205,7 @@ diameter = size * scale
 perimeter = diameter * radians
 pixel = input(1) / perimeter
 tick = relativeTime * pixel
-realTime = calcUnit.min(tick.max(second))
+realTime = calcUnit.min(tick.max(1000))
 delay = realTime / timeMultiplier
 threashold = realTime * 2
 
@@ -223,9 +223,9 @@ delta = un_to - un_position
 timeDelta = relativeTime * delta
 big = timeDelta > threashold
 visible = delta > pixel
-not_fast = delay >= second
+not_fast = delay >= 1000
 jump = big & not_fast
-superfast = delay < (second * 0.001)
+superfast = delay < 1
 
 
 Term.name_terms(binding)

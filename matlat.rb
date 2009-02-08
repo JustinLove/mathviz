@@ -170,6 +170,14 @@ class Equation < Term
     end
   end
   
+  def style
+    if ([:>, :<, :>=, :<=, :&, :|].include? @op)
+      :filled
+    else
+      super
+    end
+  end
+  
   def to_dot(g)
     super
     g[@a.node] >> g[node]
@@ -238,7 +246,7 @@ superfast = delay < 1
 Term.name_terms(binding)
 #puts Term.list_terms(binding).map {|t| t.long}
 graph = GraphvizR.new 'dc'
-graph.rank :same, [:pixel, :delta]
+graph.rank :same, [:pixel, :delta, :realTime]
 #graph.rank :same, [:tick, :timeDelta, :threashold]
 graph = Term.list_terms(binding).inject(graph) {|g, t|
   t.to_dot(g)

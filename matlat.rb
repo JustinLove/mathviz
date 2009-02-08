@@ -189,9 +189,9 @@ second = input 1
 
 scale = input 1.0
 size = input 72
-count = input 60
+count = input 10
 unit = input 1
-calcUnit = second * 1
+calcUnit = second * 0.1
 timeMultiplier = input 1
 time = input Time.now
 
@@ -199,7 +199,8 @@ root_position = time / calcUnit
 unit_position = root_position / unit
 un_position = unit_position / count
 
-relativeTime = calcUnit * unit * count
+resolution = unit * count
+relativeTime = calcUnit * resolution
 diameter = size * scale
 perimeter = diameter * radians
 pixel = input(1) / perimeter
@@ -208,11 +209,10 @@ realTime = calcUnit.min(tick.max(second))
 delay = realTime / timeMultiplier
 threashold = realTime * 2
 
-frameRate = input 1
+frameRate = input 10
 step = second / frameRate
-#step = delay
-#passed = step * timeMultiplier
-passed = delay * timeMultiplier
+passed = step * timeMultiplier
+#passed = delay * timeMultiplier
 ms = time + passed
 
 root_to = ms / calcUnit
@@ -223,8 +223,9 @@ delta = un_to - un_position
 timeDelta = relativeTime * delta
 big = timeDelta > threashold
 visible = delta > pixel
-normal = delay >= second
-jump = big & normal
+not_fast = delay >= second
+jump = big & not_fast
+superfast = delay < (second * 0.001)
 
 
 Term.name_terms(binding)

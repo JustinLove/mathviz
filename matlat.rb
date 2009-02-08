@@ -153,7 +153,7 @@ class Equation < Term
   end
   
   def data
-    "#{@op} = #{to_f}"
+    "#{@op} #{to_f}"
   end
   
   def shape

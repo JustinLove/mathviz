@@ -54,7 +54,11 @@ class Term
   end
   
   def data
-    to_f
+    if (to_f.floor == to_f)
+      to_i
+    else
+      to_f
+    end
   end
   
   def label
@@ -77,7 +81,7 @@ class Term
     if @name
       :solid
     else
-      :dotted
+      :dashed
     end
   end
   
@@ -129,6 +133,10 @@ class Constant < Term
   def to_f
     @a.to_f
   end
+  
+  def shape
+    :plaintext
+  end
 end
 
 class Equation < Term
@@ -157,7 +165,11 @@ class Equation < Term
   end
   
   def shape
-    return :box
+    if ([:>, :<, :>=, :<=, :&, :|].include? @op)
+      :ellipse
+    else
+      :box
+    end
   end
   
   def color
@@ -170,18 +182,10 @@ class Equation < Term
     end
   end
   
-  def style
-    if ([:>, :<, :>=, :<=, :&, :|].include? @op)
-      :filled
-    else
-      super
-    end
-  end
-  
   def to_dot(g)
     super
-    g[@a.node] >> g[node]
-    g[@b.node] >> g[node]
+    (g[@a.node] >> g[node]) [:arrowhead => :normal]
+    (g[@b.node] >> g[node]) [:arrowhead => :onormal]
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
     @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)
   end
@@ -206,21 +210,21 @@ scale = input 1.0
 size = input 172
 count = input 10
 unit = input 1
-calcUnit = input 100
+resolution = input 100
 timeMultiplier = input 1
 time = input((Time.now.to_f * 1000).floor)
 
-root_position = time / calcUnit
+root_position = time / resolution
 unit_position = root_position / unit
 un_position = unit_position / count
 
-resolution = unit * count
-relativeTime = calcUnit * resolution
+timels = unit * count
+ms_rev = resolution * timels
 diameter = size * scale
 perimeter = diameter * pi
 pixel = input(1) / perimeter
-tick = relativeTime * pixel
-realTime = calcUnit.min(tick.max(1000))
+tick = ms_rev * pixel
+realTime = resolution.min(tick.max(1000))
 delay = realTime / timeMultiplier
 threashold = realTime * 2
 
@@ -230,12 +234,12 @@ passed = step * timeMultiplier
 #passed = delay * timeMultiplier
 ms = time + passed
 
-root_to = ms / calcUnit
+root_to = ms / resolution
 unit_to = root_to / unit
 un_to = unit_to / count
 
 delta = un_to - un_position
-timeDelta = relativeTime * delta
+timeDelta = ms_rev * delta
 big = timeDelta > threashold
 visible = delta > pixel
 not_fast = delay >= 1000

@@ -226,7 +226,7 @@ pixel = input(1) / perimeter
 tick = ms_rev * pixel
 realTime = resolution.min(tick.max(1000))
 delay = realTime / timeMultiplier
-threashold = realTime * 2
+threshold = realTime * 2
 
 frameRate = input 10
 step = second / frameRate
@@ -240,7 +240,7 @@ un_to = unit_to / count
 
 delta = un_to - un_position
 timeDelta = ms_rev * delta
-big = timeDelta > threashold
+big = timeDelta > threshold
 visible = delta > pixel
 not_fast = delay >= 1000
 jump = big & not_fast

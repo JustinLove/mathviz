@@ -222,9 +222,9 @@ timels = unit * count
 ms_rev = resolution * timels
 diameter = size * scale
 perimeter = diameter * pi
-pixel = input(1) / perimeter
-tick = ms_rev * pixel
-realTime = resolution.min(tick.max(1000))
+rev_pixel = input(1) / perimeter
+ms_pixel = ms_rev * rev_pixel
+realTime = resolution.min(ms_pixel.max(1000))
 delay = realTime / timeMultiplier
 threshold = realTime * 2
 
@@ -241,7 +241,7 @@ un_to = unit_to / count
 delta = un_to - un_position
 timeDelta = ms_rev * delta
 big = timeDelta > threshold
-visible = delta > pixel
+visible = delta > rev_pixel
 not_fast = delay >= 1000
 jump = big & not_fast
 superfast = delay < 1
@@ -250,8 +250,8 @@ superfast = delay < 1
 Term.name_terms(binding)
 #puts Term.list_terms(binding).map {|t| t.long}
 graph = GraphvizR.new 'dc'
-graph.rank :same, [:pixel, :delta, :realTime]
-#graph.rank :same, [:tick, :timeDelta, :threashold]
+graph.rank :same, [:rev_pixel, :delta, :realTime]
+#graph.rank :same, [:ms_rev, :timeDelta, :threashold]
 graph = Term.list_terms(binding).inject(graph) {|g, t|
   t.to_dot(g)
   g

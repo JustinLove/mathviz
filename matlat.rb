@@ -89,7 +89,7 @@ class Term
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
   
-  @@anon_master = 'a'
+  @@anon_master = 'A'
   def anon
     if (@anon)
       @anon
@@ -113,6 +113,7 @@ class Term
   binop :>=
   binop :&
   binop :|
+  binop :==
 end
 
 class Constant < Term
@@ -165,7 +166,7 @@ class Equation < Term
   end
   
   def shape
-    if ([:>, :<, :>=, :<=, :&, :|].include? @op)
+    if ([:>, :<, :>=, :<=, :&, :|, :==].include? @op)
       :ellipse
     else
       :box
@@ -207,7 +208,7 @@ pi = input 3.14159
 second = input 1000
 
 scale = input 1.0
-size = input 172
+diameter = input 172
 count = input 10
 unit = input 1
 resolution = input 100
@@ -220,13 +221,15 @@ un_position = unit_position / count
 
 timels = unit * count
 ms_rev = resolution * timels
-diameter = size * scale
+rev_second = input(1000) / ms_rev
+real_rev_s = rev_second * timeMultiplier
+rev_timel = input(1) / timels
 perimeter = diameter * pi
-rev_pixel = input(1) / perimeter
-ms_pixel = ms_rev * rev_pixel
-realTime = resolution.min(ms_pixel.max(1000))
-delay = realTime / timeMultiplier
-threshold = realTime * 2
+rev_pixel = scale / perimeter
+tick = rev_timel.min(rev_pixel.max(rev_second))
+threshold = tick * 2
+ms_tick = ms_rev * tick
+delay = ms_tick / timeMultiplier
 
 frameRate = input 10
 step = second / frameRate
@@ -239,19 +242,17 @@ unit_to = root_to / unit
 un_to = unit_to / count
 
 delta = un_to - un_position
-timeDelta = ms_rev * delta
-big = timeDelta > threshold
+big = delta > threshold
 visible = delta > rev_pixel
-not_fast = delay >= 1000
-jump = big & not_fast
-superfast = delay < 1
+animatable = real_rev_s < 0.1
+jump = big & animatable
+superfast = real_rev_s > 2
 
 
 Term.name_terms(binding)
 #puts Term.list_terms(binding).map {|t| t.long}
 graph = GraphvizR.new 'dc'
-graph.rank :same, [:rev_pixel, :delta, :realTime]
-#graph.rank :same, [:ms_rev, :timeDelta, :threashold]
+graph.rank :same, [:animatable, :superfast, :big]
 graph = Term.list_terms(binding).inject(graph) {|g, t|
   t.to_dot(g)
   g

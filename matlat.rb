@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'graphviz_r'
 
 class Numeric
@@ -221,12 +222,12 @@ un_position = unit_position / count
 
 timels = unit * count
 ms_rev = resolution * timels
-rev_second = input(1000) / ms_rev
-real_rev_s = rev_second * timeMultiplier
+rev_s = input(1000) / ms_rev
+real_rev_s = rev_s * timeMultiplier
 rev_timel = input(1) / timels
 perimeter = diameter * pi
 rev_pixel = scale / perimeter
-tick = rev_timel.min(rev_pixel.max(rev_second))
+tick = rev_timel.min(rev_pixel.max(rev_s))
 threshold = tick * 2
 ms_tick = ms_rev * tick
 delay = ms_tick / timeMultiplier

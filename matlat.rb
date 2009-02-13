@@ -244,7 +244,6 @@ class MatLat
     Term.name_terms(@env)
     #puts Term.list_terms(@env).map {|t| t.long}
     graph = GraphvizR.new @name
-    graph.rank :same, [:animatable, :superfast, :big]
     graph = Term.list_terms(@env).inject(graph) {|g, t|
       t.to_dot(g)
       g

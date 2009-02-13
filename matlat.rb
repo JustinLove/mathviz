@@ -201,64 +201,79 @@ class Equation < Term
   end
 end
 
-def input(x)
-  Constant.new(x)
+
+class MatLat
+  def initialize(name, bind = nil, &proc)
+    @name = name
+    @env = bind || instance_eval(&proc)
+  end
+  
+  def input(x)
+    Constant.new(x)
+  end
+  
+  def dot
+    Term.name_terms(@env)
+    puts Term.list_terms(@env).map {|t| t.long}
+    graph = GraphvizR.new @name
+    graph.rank :same, [:animatable, :superfast, :big]
+    graph = Term.list_terms(@env).inject(graph) {|g, t|
+      t.to_dot(g)
+      g
+    }
+
+    #puts graph.to_dot
+    graph.output(@name + '.dot', 'dot')
+  end
 end
 
-pi = input 3.14159
-second = input 1000
+MatLat.new('dc') {
+  pi = input 3.14159
+  second = input 1000
 
-scale = input 1
-diameter = input 172
-count = input 10
-unit = input 1
-resolution = input 100
-timeMultiplier = input 1
-time = input((Time.now.to_f * 1000).floor)
-frameRate = input 1
+  scale = input 1
+  diameter = input 172
+  count = input 10
+  unit = input 1
+  resolution = input 100
+  timeMultiplier = input 1
+  time = input((Time.now.to_f * 1000).floor)
+  frameRate = input 1
 
-root_position = time / resolution
-unit_position = root_position / unit
-un_position = unit_position / count
+  root_position = time / resolution
+  unit_position = root_position / unit
+  un_position = unit_position / count
 
-timels = unit * count
-ms_rev = resolution * timels
-rev_s = input(1000) / ms_rev
-real_rev_s = rev_s * timeMultiplier
-rev_timel = input(1) / timels
-configPerimeter = diameter * pi
-perimeter = configPerimeter * scale
-rev_pixel = input(1) / perimeter
-tick = rev_timel.min(rev_pixel.max(rev_s))
-threshold = tick * 2
-real_ms_rev = ms_rev / timeMultiplier
-delay = tick * real_ms_rev
+  timels = unit * count
+  ms_rev = resolution * timels
+  rev_s = input(1000) / ms_rev
+  real_rev_s = rev_s * timeMultiplier
+  rev_timel = input(1) / timels
+  configPerimeter = diameter * pi
+  perimeter = configPerimeter * scale
+  rev_pixel = input(1) / perimeter
+  tick = rev_timel.min(rev_pixel.max(rev_s))
+  threshold = tick * 2
+  real_ms_rev = ms_rev / timeMultiplier
+  delay = tick * real_ms_rev
 
-step = second / frameRate
-passed = step * timeMultiplier
-#passed = delay * timeMultiplier
-ms = time + passed
+  step = second / frameRate
+  passed = step * timeMultiplier
+  #passed = delay * timeMultiplier
+  ms = time + passed
 
-root_to = ms / resolution
-unit_to = root_to / unit
-un_to = unit_to / count
+  root_to = ms / resolution
+  unit_to = root_to / unit
+  un_to = unit_to / count
 
-delta = un_to - un_position
-big = delta > threshold
-visible = delta > rev_pixel
-animatable = real_rev_s < 0.01
-jump = big & animatable
-superfast = real_rev_s > 1.5
+  delta = un_to - un_position
+  big = delta > threshold
+  visible = delta > rev_pixel
+  animatable = real_rev_s < 0.01
+  jump = big & animatable
+  superfast = real_rev_s > 1.5
+
+  binding
+}.dot
 
 
-Term.name_terms(binding)
-#puts Term.list_terms(binding).map {|t| t.long}
-graph = GraphvizR.new 'dc'
-graph.rank :same, [:animatable, :superfast, :big]
-graph = Term.list_terms(binding).inject(graph) {|g, t|
-  t.to_dot(g)
-  g
-}
-
-#puts graph.to_dot
-graph.output('dc.dot', 'dot')

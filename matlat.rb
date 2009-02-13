@@ -79,17 +79,19 @@ class Term
   end
   
   def style
-    if @name
+    if anonymous?
+      :dotted
+    elsif constant?
       :solid
     else
-      :dotted
+      :dashed
     end
   end
   
   def to_dot(g)
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
-  
+    
   @@anon_master = 'A'
   def anon
     if (@anon)
@@ -100,6 +102,10 @@ class Term
       #puts "#{self.object_id} anon #{@anon}"
       @anon
     end
+  end
+
+  def anonymous?
+    !@name
   end
 
   binop :+
@@ -139,15 +145,19 @@ class Constant < Term
   def shape
     :plaintext
   end
+  
+  def constant?
+    true
+  end
 end
 
 class Input < Constant
-  def style
-    :dotted
-  end
-  
   def shape
     :ellipse
+  end
+
+  def constant?
+    false
   end
 end
 
@@ -208,6 +218,10 @@ class Equation < Term
 
   def to_f
     @a.to_f.__send__(@op, @b.to_f)
+  end
+  
+  def constant?
+    @a.constant? && @b.constant?
   end
 end
 

@@ -82,7 +82,7 @@ class Term
     if @name
       :solid
     else
-      :dashed
+      :dotted
     end
   end
   
@@ -138,6 +138,16 @@ class Constant < Term
   
   def shape
     :plaintext
+  end
+end
+
+class Input < Constant
+  def style
+    :dotted
+  end
+  
+  def shape
+    :ellipse
   end
 end
 
@@ -208,8 +218,12 @@ class MatLat
     @env = bind || instance_eval(&proc)
   end
   
-  def input(x)
+  def const(x)
     Constant.new(x)
+  end
+
+  def input(x)
+    Input.new(x)
   end
   
   def dot

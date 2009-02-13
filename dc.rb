@@ -1,15 +1,15 @@
 require 'matlat'
 
 MatLat.new('dc') {
-  pi = input 3.14159
-  second = input 1000
+  pi = const 3.14159
+  second = const 1000
 
   scale = input 1
-  diameter = input 172
-  count = input 10
-  unit = input 1
-  resolution = input 100
-  timeMultiplier = input 1
+  diameter = const 172
+  count = const 10
+  unit = const 1
+  resolution = const 100
+  timeMultiplier = const 1
   time = input((Time.now.to_f * 1000).floor)
   frameRate = input 1
 
@@ -19,12 +19,12 @@ MatLat.new('dc') {
 
   timels = unit * count
   ms_rev = resolution * timels
-  rev_s = input(1000) / ms_rev
+  rev_s = const(1000) / ms_rev
   real_rev_s = rev_s * timeMultiplier
-  rev_timel = input(1) / timels
+  rev_timel = const(1) / timels
   configPerimeter = diameter * pi
   perimeter = configPerimeter * scale
-  rev_pixel = input(1) / perimeter
+  rev_pixel = const(1) / perimeter
   tick = rev_timel.min(rev_pixel.max(rev_s))
   threshold = tick * 2
   real_ms_rev = ms_rev / timeMultiplier

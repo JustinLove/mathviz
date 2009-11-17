@@ -2,3 +2,6 @@ syntax: glob
 \.DS_Store
 *.tmproj
 *.orig
+*.dot
+*.png
+*.ps

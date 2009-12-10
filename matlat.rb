@@ -70,7 +70,7 @@ class Term
 
   def label
     if (@name)
-      [node, data].join("\n")
+      [data, node].join("\n")
     else
       data.to_s
     end

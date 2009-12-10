@@ -40,7 +40,7 @@ class Term
 
   def self.binop(op)
     define_method(op) do |c|
-      BinaryOperation.new(self, op, c)
+      Operation::Binary.new(self, op, c)
     end
   end
  
@@ -161,14 +161,7 @@ class Input < Constant
   end
 end
 
-class BinaryOperation < Term
-  def initialize(a, op, b)
-    super()
-    @a = term(a)
-    @op = op
-    @b = term(b)
-  end
-
+class Operation < Term
   def term(x)
     if (x.kind_of?(Term))
       x
@@ -177,13 +170,30 @@ class BinaryOperation < Term
     end
   end
 
+  def data
+    "#{@op} #{to_f}"
+  end
+
+  def shape
+    :box
+  end
+
+  def color
+    :red
+  end
+end
+
+class Operation::Binary < Operation
+  def initialize(a, op, b)
+    super()
+    @a = term(a)
+    @op = op
+    @b = term(b)
+  end
+
   def long
     n = @name && (@name + " = ")
     "(#{n}#{@a} #{@op} #{@b} = #{to_f})"
-  end
-
-  def data
-    "#{@op} #{to_f}"
   end
 
   def shape

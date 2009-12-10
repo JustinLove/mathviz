@@ -40,7 +40,7 @@ class Term
 
   def self.binop(op)
     define_method(op) do |c|
-      Equation.new(self, op, c)
+      BinaryOperation.new(self, op, c)
     end
   end
  
@@ -161,7 +161,7 @@ class Input < Constant
   end
 end
 
-class Equation < Term
+class BinaryOperation < Term
   def initialize(a, op, b)
     super()
     @a = term(a)

@@ -5,7 +5,7 @@ class Numeric
   def max(b)
     [self, b].max
   end
-  
+
   def min(b)
     [self, b].min
   end
@@ -26,7 +26,7 @@ class Term
       end
     end
   end
-  
+
   def self.list_terms(env)
     eval("local_variables", env).map { |var|
       value = eval(var, env)
@@ -37,13 +37,13 @@ class Term
       end
     }.compact
   end
-  
+
   def self.binop(op)
     define_method(op) do |c|
       Equation.new(self, op, c)
     end
   end
-  
+ 
   attr_accessor :name
   
   def to_s
@@ -53,7 +53,7 @@ class Term
   def node
     to_s
   end
-  
+
   def data
     if (to_f.floor == to_f)
       to_i
@@ -61,15 +61,15 @@ class Term
       to_f
     end
   end
-  
+
   def label
     if (@name)
       [node, data].join("\n")
     else
       data.to_s
     end
-  end              
-  
+  end
+
   def shape
     :ellipse
   end
@@ -77,7 +77,7 @@ class Term
   def color
     :black
   end
-  
+
   def style
     if anonymous?
       :dotted
@@ -87,11 +87,11 @@ class Term
       :dashed
     end
   end
-  
+
   def to_dot(g)
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
-    
+
   @@anon_master = 'A'
   def anon
     if (@anon)
@@ -168,7 +168,7 @@ class Equation < Term
     @op = op
     @b = term(b)
   end
-  
+
   def term(x)
     if (x.kind_of?(Term))
       x
@@ -181,11 +181,11 @@ class Equation < Term
     n = @name && (@name + " = ")
     "(#{n}#{@a} #{@op} #{@b} = #{to_f})"
   end
-  
+
   def data
     "#{@op} #{to_f}"
   end
-  
+
   def shape
     if ([:>, :<, :>=, :<=, :&, :|, :==].include? @op)
       :ellipse
@@ -193,7 +193,7 @@ class Equation < Term
       :box
     end
   end
-  
+
   def color
     case @op
     when :+: :green;
@@ -203,7 +203,7 @@ class Equation < Term
     else :red;
     end
   end
-  
+
   def to_dot(g)
     super
     (g[@a.node] >> g[node]) [:arrowhead => :normal]
@@ -211,7 +211,7 @@ class Equation < Term
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
     @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)
   end
-  
+
   def to_i
     @a.to_i.__send__(@op, @b.to_i)
   end
@@ -219,7 +219,7 @@ class Equation < Term
   def to_f
     @a.to_f.__send__(@op, @b.to_f)
   end
-  
+
   def constant?
     @a.constant? && @b.constant?
   end
@@ -231,7 +231,7 @@ class MatLat
     @name = name
     @env = bind || instance_eval(&proc)
   end
-  
+
   def const(x)
     Constant.new(x)
   end
@@ -239,7 +239,7 @@ class MatLat
   def input(x)
     Input.new(x)
   end
-  
+
   def dot
     Term.name_terms(@env)
     #puts Term.list_terms(@env).map {|t| t.long}

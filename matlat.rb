@@ -179,7 +179,7 @@ class Operation < Term
   end
 
   def data
-    "#{@op} #{to_f}"
+    "#{to_f}"
   end
 
   def shape
@@ -205,7 +205,7 @@ class Operation::Unary < Operation
 
   def to_dot(g)
     super
-    (g[@a.node] >> g[node]) [:arrowhead => :normal]
+    (g[@a.node] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
   end
 
@@ -255,7 +255,7 @@ class Operation::Binary < Operation
 
   def to_dot(g)
     super
-    (g[@a.node] >> g[node]) [:arrowhead => :normal]
+    (g[@a.node] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
     (g[@b.node] >> g[node]) [:arrowhead => :onormal]
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
     @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)

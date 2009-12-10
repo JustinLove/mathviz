@@ -43,13 +43,19 @@ class Term
       Operation::Binary.new(self, op, c)
     end
   end
- 
+
+  def self.unop(op)
+    define_method(op) do
+      Operation::Unary.new(self, op)
+    end
+  end
+
   attr_accessor :name
-  
+
   def to_s
     @name || anon
   end
-  
+
   def node
     to_s
   end
@@ -107,6 +113,8 @@ class Term
   def anonymous?
     !@name
   end
+
+  unop :floor
 
   binop :+
   binop :-
@@ -180,6 +188,37 @@ class Operation < Term
 
   def color
     :red
+  end
+end
+
+class Operation::Unary < Operation
+  def initialize(a, op)
+    super()
+    @a = term(a)
+    @op = op
+  end
+
+  def long
+    n = @name && (@name + " = ")
+    "(#{n}#{@a} #{@op} = #{to_f})"
+  end
+
+  def to_dot(g)
+    super
+    (g[@a.node] >> g[node]) [:arrowhead => :normal]
+    @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
+  end
+
+  def to_i
+    @a.to_i.__send__(@op)
+  end
+
+  def to_f
+    @a.to_f.__send__(@op)
+  end
+
+  def constant?
+    @a.constant?
   end
 end
 

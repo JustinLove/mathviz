@@ -91,8 +91,8 @@ module Measured
     @unit_sign = 1
   end
 
-  def unit_s
-    ' ' + @unit.to_s
+  def to_s_with_units
+    to_s + ' ' + @unit.to_s
   end
 
   def unit(x)

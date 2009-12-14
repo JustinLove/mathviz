@@ -26,4 +26,8 @@ describe Measured do
   it "can have different units" do
     Subject.new.unit(:x).to_s.should == "1 x"
   end
+
+  it "should create denominators" do
+    Subject.new.per.s.to_s.should == "1 1/s"
+  end
 end

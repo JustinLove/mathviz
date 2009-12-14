@@ -72,6 +72,7 @@ end
 module Measured
   def initialize(*args)
     @unit = Unit.new
+    @unit_sign = 1
   end
 
   def s
@@ -83,7 +84,16 @@ module Measured
   end
 
   def unit(x)
-    @unit *= Unit.new(x)
+    if (@unit_sign > 0)
+      @unit *= Unit.new(x)
+    else
+      @unit /= Unit.new(x)
+    end
+    self
+  end
+
+  def per
+    @unit_sign *= -1
     self
   end
 end

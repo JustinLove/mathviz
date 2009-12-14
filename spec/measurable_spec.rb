@@ -2,11 +2,7 @@ require 'rubygems'
 require 'spec'
 require File.join(File.dirname(__FILE__), '..', 'matlat')
 
-class Numeric
-  include Measurable
-end
-
-class Term
+module Units
   new_units :s
 end
 

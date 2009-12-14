@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'graphviz_r'
 
+Infinity = 1.0/0
+
 class Unit
   attr_reader :unit
 
@@ -107,7 +109,7 @@ module Measured
   include Units
 
   def with_units
-    u = @unit.to_s
+    u = units.to_s
     if (u.empty?)
       u
     else
@@ -135,15 +137,25 @@ module Measured
     @unit_sign *= -1
     self
   end
+
+  def units
+    @unit || Unit.new
+  end
 end
 
 class Numeric
+  include Measurable
+
   def max(b)
     [self, b].max
   end
 
   def min(b)
     [self, b].min
+  end
+
+  def finite?
+    true
   end
 end
 
@@ -199,10 +211,12 @@ class Term
   end
 
   def data
-    if (to_f.floor == to_f)
-      to_i.to_s + with_units
+    i,f = to_i,to_f
+    return "Infinity" unless f.finite?
+    if (f.floor == f)
+      i.to_s + with_units
     else
-      to_f.to_s + with_units
+      f.to_s + with_units
     end
   end
 
@@ -316,10 +330,6 @@ class Operation < Term
     end
   end
 
-  def data
-    "#{to_f}"
-  end
-
   def shape
     :box
   end
@@ -348,10 +358,12 @@ class Operation::Unary < Operation
   end
 
   def to_i
+    return Infinity unless @a.to_i.finite?
     @a.to_i.__send__(@op)
   end
 
   def to_f
+    return Infinity unless @a.to_f.finite?
     @a.to_f.__send__(@op)
   end
 
@@ -400,11 +412,17 @@ class Operation::Binary < Operation
   end
 
   def to_i
-    @a.to_i.__send__(@op, @b.to_i)
+    b = @b.to_i
+    return Infinity if (@op == :/ && b == 0)
+    @a.to_i.__send__(@op, b)
   end
 
   def to_f
     @a.to_f.__send__(@op, @b.to_f)
+  end
+
+  def units
+    @a.units.__send__(@op, @b.units)
   end
 
   def constant?

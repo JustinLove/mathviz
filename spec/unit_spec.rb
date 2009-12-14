@@ -23,6 +23,9 @@ shared_examples_for "common combinations" do
     (@unit / Unit.new).to_s.should == @unit.to_s
   end
 
+  it "cancels on division" do
+    (@unit / @unit).should.to_s == ''
+  end
 end
 
 describe "Unit" do
@@ -92,6 +95,10 @@ describe "Unit" do
     it "divides with denominator" do
       ['s*x', 'x*s'].should include((@unit / Unit.new(:x => -1)).to_s)
     end
+
+    it "cancels on multiplication" do
+      (@unit * Unit.new(:s => -1)).to_s.should == ''
+    end
   end
 
   context "with a denominator argument" do
@@ -120,6 +127,10 @@ describe "Unit" do
     it "divides with denominator" do
       ['x/s'].should include((@unit / Unit.new(:x => -1)).to_s)
     end
+
+    it "cancels on multiplication" do
+      (@unit * Unit.new(:s => 1)).to_s.should == ''
+    end
   end
 
   context "with a complex argument" do
@@ -131,6 +142,14 @@ describe "Unit" do
 
     it "has a complex representation" do
       ["V*A/h", "A*V/h"].should include(@unit.to_s)
+    end
+
+    it "cancels on multiplication" do
+      ["V*A", "A*V"].should include((@unit * Unit.new(:h)).to_s)
+    end
+
+    it "cancels on multiplication" do
+      ["V/h"].should include((@unit * Unit.new(:A => -1)).to_s)
     end
   end
 end

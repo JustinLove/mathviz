@@ -54,7 +54,7 @@ class Unit
   end
 
   def stream(units)
-    x = units.keys.join('*')
+    x = units.map {|u,power| [u] * power.abs }.flatten.join('*')
     if (x.empty?)
       return nil
     else
@@ -302,13 +302,25 @@ class Constant < Term
   def to_f
     @a.to_f
   end
-  
+
+  def units
+    if @a.respond_to? :units
+      @a.units
+    else
+      super
+    end
+  end
+
   def shape
     :plaintext
   end
   
   def constant?
     true
+  end
+
+  def finite?
+    @a.finite?
   end
 end
 

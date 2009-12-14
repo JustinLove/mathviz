@@ -101,6 +101,42 @@ describe "Unit" do
     end
   end
 
+  context "with a numerator squared argument" do
+    before do
+      @unit = Unit.new(:s => 2)
+    end
+
+    it_should_behave_like "common combinations"
+
+    it "has a double representation" do
+      @unit.to_s.should == "s*s"
+    end
+
+    it "multiplies with numerator" do
+      ['s*s*x', 'x*s*s'].should include((@unit * Unit.new(:x)).to_s)
+    end
+
+    it "divides with numerator" do
+      (@unit / Unit.new(:x)).to_s.should == 's*s/x'
+    end
+
+    it "multiplies with denominator" do
+      (@unit * Unit.new(:x => -1)).to_s.should == 's*s/x'
+    end
+
+    it "divides with denominator" do
+      ['s*s*x', 'x*s*s'].should include((@unit / Unit.new(:x => -1)).to_s)
+    end
+
+    it "cancels on multiplication" do
+      (@unit * Unit.new(:s => -1)).to_s.should == 's'
+    end
+
+    it "increases on multiplication" do
+      (@unit * Unit.new(:s => 1)).to_s.should == 's*s*s'
+    end
+  end
+
   context "with a denominator argument" do
     before do
       @unit = Unit.new(:s => -1)

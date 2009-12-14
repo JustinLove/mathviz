@@ -5,10 +5,10 @@ class Unit
   attr_reader :unit
 
   def initialize(h = nil)
+    @unit = Hash.new(0)
     case h
-    when Hash; @unit = h.dup; normalize!
-    when Symbol: @unit = Hash.new(0); @unit[h] = 1
-    else @unit = Hash.new(0)
+    when Hash; @unit.merge!(h); normalize!
+    when Symbol: @unit[h] = 1
     end
     @unit.freeze
     freeze

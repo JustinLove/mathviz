@@ -58,4 +58,14 @@ describe "Unit" do
       @unit.to_s.should == "1/s"
     end
   end
+
+  context "with a complex argument" do
+    before do
+      @unit = Unit.new(:V => 1, :A => 1, :h => -1)
+    end
+
+    it "has a complex representation" do
+      @unit.to_s.should == "A*V/h"
+    end
+  end
 end

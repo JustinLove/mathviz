@@ -23,7 +23,8 @@ class Unit
 
   def +(other)
     if (unit != other.unit)
-      raise 'unit mismatch'
+      p "#{to_s} !+- #{other.to_s}"
+      return Unit.new(:ERROR)
     end
     return self
   end

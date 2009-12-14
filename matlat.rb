@@ -70,13 +70,25 @@ class Unit
 end
 
 module Measured
+  module Class
+    def new_units(*units)
+      units.each do |u|
+        define_method u do
+          unit(u)
+        end
+      end
+    end
+  end
+
+  extend Class
+
+  def self.included(host)
+    host.extend(Measured::Class)
+  end
+
   def initialize(*args)
     @unit = Unit.new
     @unit_sign = 1
-  end
-
-  def s
-    unit(:s)
   end
 
   def unit_s

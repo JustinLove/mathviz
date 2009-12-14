@@ -5,6 +5,8 @@ require File.join(File.dirname(__FILE__), '..', 'matlat')
 class Subject
   include Measured
 
+  new_units :s
+
   def to_s
     "1"+ unit_s
   end
@@ -29,5 +31,10 @@ describe Measured do
 
   it "should create denominators" do
     Subject.new.per.s.to_s.should == "1 1/s"
+  end
+
+  it "should have a shorthand for new units" do
+    Subject.new_units(:m, :h)
+    Subject.new.m.per.h.to_s.should == "1 m/h"
   end
 end

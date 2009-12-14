@@ -69,11 +69,28 @@ class Unit
   end
 end
 
+module Measurable
+  def to_s_with_units
+    to_s
+  end
+
+  def unit(x)
+    Constant.new(self).unit(x)
+  end
+
+  def per
+    Constant.new(self).per
+  end
+end
+
 module Measured
   module Class
     def new_units(*units)
       units.each do |u|
-        define_method u do
+        Measured.__send__ :define_method, u do
+          unit(u)
+        end
+        Measurable.__send__ :define_method, u do
           unit(u)
         end
       end
@@ -86,16 +103,22 @@ module Measured
     host.extend(Measured::Class)
   end
 
-  def initialize(*args)
-    @unit = Unit.new
-    @unit_sign = 1
+  def with_units
+    u = @unit.to_s
+    if (u.empty?)
+      u
+    else
+      ' ' + u
+    end
   end
 
   def to_s_with_units
-    to_s + ' ' + @unit.to_s
+    to_s + with_units
   end
 
   def unit(x)
+    @unit ||= Unit.new
+    @unit_sign ||= 1
     if (@unit_sign > 0)
       @unit *= Unit.new(x)
     else
@@ -105,6 +128,7 @@ module Measured
   end
 
   def per
+    @unit_sign ||= 1
     @unit_sign *= -1
     self
   end
@@ -127,6 +151,8 @@ class Object
 end
 
 class Term
+  include Measured
+
   def self.name_terms(env)
     eval("local_variables", env).each do |var|
       value = eval(var, env)
@@ -171,9 +197,9 @@ class Term
 
   def data
     if (to_f.floor == to_f)
-      to_i
+      to_i.to_s + with_units
     else
-      to_f
+      to_f.to_s + with_units
     end
   end
 
@@ -181,7 +207,7 @@ class Term
     if (@name)
       [data, node].join("\n")
     else
-      data.to_s
+      data
     end
   end
 

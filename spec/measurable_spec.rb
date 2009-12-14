@@ -1,0 +1,22 @@
+require 'rubygems'
+require 'spec'
+require File.join(File.dirname(__FILE__), '..', 'matlat')
+
+class Numeric
+  include Measurable
+end
+
+class Term
+  new_units :s
+end
+
+describe Measured do
+  it "works on numbers" do
+    1.s.data.should == "1 s"
+  end
+
+  it "doesn't pollute" do
+    1.s
+    1.to_s_with_units.should == "1"
+  end
+end

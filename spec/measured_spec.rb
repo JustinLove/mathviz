@@ -25,6 +25,10 @@ describe Measured do
     @subject.to_s_with_units.should == "1 s"
   end
 
+  it "should not have extra space if no unit" do
+    Subject.new.to_s_with_units.should == "1"
+  end
+
   it "can have different units" do
     Subject.new.unit(:x).to_s_with_units.should == "1 x"
   end

@@ -6,10 +6,12 @@ class Unit
 
   def initialize(h = nil)
     case h
-    when Hash; @unit = h; normalize!
+    when Hash; @unit = h.dup; normalize!
     when Symbol: @unit = Hash.new(0); @unit[h] = 1
     else @unit = Hash.new(0)
     end
+    @unit.freeze
+    freeze
   end
 
   def normalize!
@@ -21,7 +23,7 @@ class Unit
     if (unit != other.unit)
       raise 'unit mismatch'
     end
-    return @unit.dup
+    return self
   end
   alias_method :-, :+
 

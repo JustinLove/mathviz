@@ -19,6 +19,10 @@ describe "Unit" do
     it "rejects a mismatch" do
       lambda {@unit + Unit.new(:s)}.should raise_error
     end
+
+    it "adds with same" do
+      (@unit + @unit).to_s.should == @unit.to_s
+    end
   end
 
   context "with a single argument" do
@@ -36,6 +40,10 @@ describe "Unit" do
 
     it "rejects a mismatch" do
       lambda {@unit + Unit.new(:h)}.should raise_error
+    end
+
+    it "adds with same" do
+      (@unit + @unit).to_s.should == @unit.to_s
     end
   end
 
@@ -55,6 +63,10 @@ describe "Unit" do
     it "rejects a mismatch" do
       lambda {@unit + Unit.new(:h)}.should raise_error
     end
+
+    it "adds with same" do
+      (@unit + @unit).to_s.should == @unit.to_s
+    end
   end
 
   context "with a denominator argument" do
@@ -73,6 +85,10 @@ describe "Unit" do
     it "rejects a mismatch" do
       lambda {@unit + Unit.new(:s)}.should raise_error
     end
+
+    it "adds with same" do
+      (@unit + @unit).to_s.should == @unit.to_s
+    end
   end
 
   context "with a complex argument" do
@@ -86,6 +102,10 @@ describe "Unit" do
 
     it "rejects a mismatch" do
       lambda {@unit + Unit.new(:s)}.should raise_error
+    end
+
+    it "adds with same" do
+      (@unit + @unit).to_s.should == @unit.to_s
     end
   end
 end

@@ -62,7 +62,7 @@ class Unit
     n = stream(numerator)
     d = stream(denominator)
     return '' unless (n || d)
-    return "#{n||1}/d" if d
+    return "#{n||1}/#{d}" if d
     return n
   end
 end

@@ -48,6 +48,10 @@ describe "Unit" do
     it "multiplies with denominator" do
       (@unit * Unit.new(:x => -1)).to_s.should == '1/x'
     end
+
+    it "divides with denominator" do
+      (@unit / Unit.new(:x => -1)).to_s.should == 'x'
+    end
   end
 
   context "with a single argument" do
@@ -71,6 +75,10 @@ describe "Unit" do
 
     it "multiplies with denominator" do
       (@unit * Unit.new(:x => -1)).to_s.should == 's/x'
+    end
+
+    it "divides with denominator" do
+      ['s*x', 'x*s'].should include((@unit / Unit.new(:x => -1)).to_s)
     end
   end
 
@@ -96,6 +104,10 @@ describe "Unit" do
     it "multiplies with denominator" do
       (@unit * Unit.new(:x => -1)).to_s.should == 's/x'
     end
+
+    it "divides with denominator" do
+      ['s*x', 'x*s'].should include((@unit / Unit.new(:x => -1)).to_s)
+    end
   end
 
   context "with a denominator argument" do
@@ -119,6 +131,10 @@ describe "Unit" do
 
     it "multiplies with denominator" do
       ['1/s*x', '1/x*s'].should include((@unit * Unit.new(:x => -1)).to_s)
+    end
+
+    it "divides with denominator" do
+      ['x/s'].should include((@unit / Unit.new(:x => -1)).to_s)
     end
   end
 

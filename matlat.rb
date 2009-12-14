@@ -1,13 +1,161 @@
 require 'rubygems'
 require 'graphviz_r'
 
+Infinity = 1.0/0
+
+class Unit
+  attr_reader :unit
+
+  def initialize(h = nil)
+    @unit = Hash.new(0)
+    case h
+    when Hash; @unit.merge!(h); normalize!
+    when Symbol: @unit[h] = 1
+    end
+    @unit.freeze
+    freeze
+  end
+
+  def normalize!
+    unit.reject! { |u,power| power == 0 }
+    self
+  end
+
+  def +(other)
+    if (unit != other.unit)
+      raise 'unit mismatch'
+    end
+    return self
+  end
+  alias_method :-, :+
+
+  def *(other)
+    x = @unit.dup
+    other.unit.each do |u,power|
+      x[u] += power
+    end
+    Unit.new(x)
+  end
+
+  def /(other)
+    x = @unit.dup
+    other.unit.each do |u,power|
+      x[u] -= power
+    end
+    Unit.new(x)
+  end
+
+  def numerator
+    unit.reject {|u,power| power < 0}
+  end
+
+  def denominator
+    unit.reject {|u,power| power > 0}
+  end
+
+  def stream(units)
+    x = units.keys.join('*')
+    if (x.empty?)
+      return nil
+    else
+      x
+    end
+  end
+
+  def to_s
+    n = stream(numerator)
+    d = stream(denominator)
+    return '' unless (n || d)
+    return "#{n||1}/#{d}" if d
+    return n
+  end
+end
+
+module Units
+  module Class
+    def new_units(*units)
+      units.each do |u|
+        Units.__send__ :define_method, u do
+          unit(u)
+        end
+      end
+    end
+
+    def included(host)
+      host.extend(Units::Class)
+    end
+  end
+
+  extend Units::Class
+end
+
+module Measurable
+  include Units
+
+  def to_s_with_units
+    to_s
+  end
+
+  def unit(x)
+    Constant.new(self).unit(x)
+  end
+
+  def per
+    Constant.new(self).per
+  end
+end
+
+module Measured
+  include Units
+
+  def with_units
+    u = units.to_s
+    if (u.empty?)
+      u
+    else
+      ' ' + u
+    end
+  end
+
+  def to_s_with_units
+    to_s + with_units
+  end
+
+  def unit(x)
+    @unit ||= Unit.new
+    @unit_sign ||= 1
+    if (@unit_sign > 0)
+      @unit *= Unit.new(x)
+    else
+      @unit /= Unit.new(x)
+    end
+    self
+  end
+
+  def per
+    @unit_sign ||= 1
+    @unit_sign *= -1
+    self
+  end
+
+  def units
+    @unit || Unit.new
+  end
+end
+
 class Numeric
+  include Measurable
+
   def max(b)
     [self, b].max
   end
 
   def min(b)
     [self, b].min
+  end
+
+  def finite?
+    true
   end
 end
 
@@ -18,6 +166,8 @@ class Object
 end
 
 class Term
+  include Measured
+
   def self.name_terms(env)
     eval("local_variables", env).each do |var|
       value = eval(var, env)
@@ -61,10 +211,12 @@ class Term
   end
 
   def data
-    if (to_f.floor == to_f)
-      to_i
+    i,f = to_i,to_f
+    return "Infinity" unless f.finite?
+    if (f.floor == f)
+      i.to_s + with_units
     else
-      to_f
+      f.to_s + with_units
     end
   end
 
@@ -72,7 +224,7 @@ class Term
     if (@name)
       [data, node].join("\n")
     else
-      data.to_s
+      data
     end
   end
 
@@ -143,6 +295,7 @@ class Constant < Term
   end
   
   def to_i
+    return Infinity unless @a.finite?
     @a.to_i
   end
 
@@ -178,10 +331,6 @@ class Operation < Term
     end
   end
 
-  def data
-    "#{to_f}"
-  end
-
   def shape
     :box
   end
@@ -210,11 +359,17 @@ class Operation::Unary < Operation
   end
 
   def to_i
+    return Infinity unless @a.to_i.finite?
     @a.to_i.__send__(@op)
   end
 
   def to_f
+    return Infinity unless @a.to_f.finite?
     @a.to_f.__send__(@op)
+  end
+
+  def units
+    @a.units
   end
 
   def constant?
@@ -262,11 +417,17 @@ class Operation::Binary < Operation
   end
 
   def to_i
-    @a.to_i.__send__(@op, @b.to_i)
+    f = to_f
+    return Infinity unless f.finite?
+    f.to_i
   end
 
   def to_f
     @a.to_f.__send__(@op, @b.to_f)
+  end
+
+  def units
+    @a.units.__send__(@op, @b.units)
   end
 
   def constant?

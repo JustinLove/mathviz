@@ -64,22 +64,6 @@ describe "Unit" do
     it "has a simple representation" do
       @unit.to_s.should == "s"
     end
-
-    it "multiplies with numerator" do
-      ['s*x', 'x*s'].should include((@unit * Unit.new(:x)).to_s)
-    end
-
-    it "divides with numerator" do
-      (@unit / Unit.new(:x)).to_s.should == 's/x'
-    end
-
-    it "multiplies with denominator" do
-      (@unit * Unit.new(:x => -1)).to_s.should == 's/x'
-    end
-
-    it "divides with denominator" do
-      ['s*x', 'x*s'].should include((@unit / Unit.new(:x => -1)).to_s)
-    end
   end
 
   context "with a numerator argument" do

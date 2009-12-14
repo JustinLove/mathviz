@@ -19,6 +19,10 @@ shared_examples_for "common combinations" do
     (@unit * Unit.new).to_s.should == @unit.to_s
   end
 
+  it "divides with nothing" do
+    (@unit / Unit.new).to_s.should == @unit.to_s
+  end
+
 end
 
 describe "Unit" do
@@ -36,6 +40,10 @@ describe "Unit" do
     it "multiplies with numerator" do
       (@unit * Unit.new(:x)).to_s.should == 'x'
     end
+
+    it "divides with numerator" do
+      (@unit / Unit.new(:x)).to_s.should == '1/x'
+    end
   end
 
   context "with a single argument" do
@@ -51,6 +59,10 @@ describe "Unit" do
 
     it "multiplies with numerator" do
       ['s*x', 'x*s'].should include((@unit * Unit.new(:x)).to_s)
+    end
+
+    it "divides with numerator" do
+      (@unit / Unit.new(:x)).to_s.should == 's/x'
     end
   end
 
@@ -68,6 +80,10 @@ describe "Unit" do
     it "multiplies with numerator" do
       ['s*x', 'x*s'].should include((@unit * Unit.new(:x)).to_s)
     end
+
+    it "divides with numerator" do
+      (@unit / Unit.new(:x)).to_s.should == 's/x'
+    end
   end
 
   context "with a denominator argument" do
@@ -83,6 +99,10 @@ describe "Unit" do
 
     it "multiplies with numerator" do
       ['x/s'].should include((@unit * Unit.new(:x)).to_s)
+    end
+
+    it "divides with numerator" do
+      ['1/s*x', '1/x*s'].should include((@unit / Unit.new(:x)).to_s)
     end
   end
 

@@ -15,6 +15,10 @@ describe "Unit" do
     it "has a blank representation" do
       @unit.to_s.should == ''
     end
+
+    it "rejects a mismatch" do
+      lambda {@unit + Unit.new(:s)}.should raise_error
+    end
   end
 
   context "with a single argument" do
@@ -28,6 +32,10 @@ describe "Unit" do
 
     it "has a simple representation" do
       @unit.to_s.should == "s"
+    end
+
+    it "rejects a mismatch" do
+      lambda {@unit + Unit.new(:h)}.should raise_error
     end
   end
 
@@ -43,6 +51,10 @@ describe "Unit" do
     it "has a simple representation" do
       @unit.to_s.should == "s"
     end
+
+    it "rejects a mismatch" do
+      lambda {@unit + Unit.new(:h)}.should raise_error
+    end
   end
 
   context "with a denominator argument" do
@@ -57,6 +69,10 @@ describe "Unit" do
     it "has a 1 in the numerator position" do
       @unit.to_s.should == "1/s"
     end
+
+    it "rejects a mismatch" do
+      lambda {@unit + Unit.new(:s)}.should raise_error
+    end
   end
 
   context "with a complex argument" do
@@ -66,6 +82,10 @@ describe "Unit" do
 
     it "has a complex representation" do
       @unit.to_s.should == "A*V/h"
+    end
+
+    it "rejects a mismatch" do
+      lambda {@unit + Unit.new(:s)}.should raise_error
     end
   end
 end

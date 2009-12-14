@@ -70,6 +70,22 @@ class Unit
 end
 
 module Measured
+  def initialize(*args)
+    @unit = Unit.new
+  end
+
+  def s
+    unit(:s)
+  end
+
+  def unit_s
+    ' ' + @unit.to_s
+  end
+
+  def unit(x)
+    @unit *= Unit.new(x)
+    self
+  end
 end
 
 class Numeric

@@ -295,6 +295,7 @@ class Constant < Term
   end
   
   def to_i
+    return Infinity unless @a.finite?
     @a.to_i
   end
 
@@ -365,6 +366,10 @@ class Operation::Unary < Operation
   def to_f
     return Infinity unless @a.to_f.finite?
     @a.to_f.__send__(@op)
+  end
+
+  def units
+    @a.units
   end
 
   def constant?

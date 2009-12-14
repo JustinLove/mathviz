@@ -417,9 +417,9 @@ class Operation::Binary < Operation
   end
 
   def to_i
-    b = @b.to_i
-    return Infinity if (@op == :/ && b == 0)
-    @a.to_i.__send__(@op, b)
+    f = to_f
+    return Infinity unless f.finite?
+    f.to_i
   end
 
   def to_f

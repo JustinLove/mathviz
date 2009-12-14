@@ -69,9 +69,7 @@ class Unit
   end
 end
 
-module Units
-  def unit(name)
-  end
+module Measured
 end
 
 class Numeric

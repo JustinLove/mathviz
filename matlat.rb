@@ -1,6 +1,77 @@
 require 'rubygems'
 require 'graphviz_r'
 
+class Unit
+  attr_reader :unit
+
+  def initialize(h = nil)
+    case h
+    when Hash; @unit = h; normalize!
+    when Symbol: @unit = Hash.new(0); @unit[h] = 1
+    else @unit = Hash.new(0)
+    end
+  end
+
+  def normalize!
+    unit.reject! { |u,power| power == 0 }
+    self
+  end
+
+  def +(other)
+    if (unit != other.unit)
+      raise 'unit mismatch'
+    end
+    return @unit.dup
+  end
+  alias_method :-, :+
+
+  def *(other)
+    x = @unit.dup
+    other.unit.each do |u,power|
+      x[u] += power
+    end
+    Unit.new(x)
+  end
+
+  def /(other)
+    x = @unit.dup
+    other.unit.each do |u,power|
+      x[u] -= power
+    end
+    Unit.new(x)
+  end
+
+  def numerator
+    unit.reject {|u,power| power < 0}
+  end
+
+  def denominator
+    unit.reject {|u,power| power > 0}
+  end
+
+  def stream(units)
+    x = units.keys.join('*')
+    if (x.empty?)
+      return nil
+    else
+      x
+    end
+  end
+
+  def to_s
+    n = stream(numerator)
+    d = stream(denominator)
+    return '' unless (n || d)
+    return "#{n||1}/d" if d
+    return n
+  end
+end
+
+module Units
+  def unit(name)
+  end
+end
+
 class Numeric
   def max(b)
     [self, b].max

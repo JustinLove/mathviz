@@ -23,6 +23,10 @@ describe "Unit" do
     it "adds with same" do
       (@unit + @unit).to_s.should == @unit.to_s
     end
+
+    it "multiplies with nothing" do
+      (@unit * Unit.new).to_s.should == @unit.to_s
+    end
   end
 
   context "with a single argument" do
@@ -44,6 +48,10 @@ describe "Unit" do
 
     it "adds with same" do
       (@unit + @unit).to_s.should == @unit.to_s
+    end
+
+    it "multiplies with nothing" do
+      (@unit * Unit.new).to_s.should == @unit.to_s
     end
   end
 
@@ -67,6 +75,10 @@ describe "Unit" do
     it "adds with same" do
       (@unit + @unit).to_s.should == @unit.to_s
     end
+
+    it "multiplies with nothing" do
+      (@unit * Unit.new).to_s.should == @unit.to_s
+    end
   end
 
   context "with a denominator argument" do
@@ -89,6 +101,10 @@ describe "Unit" do
     it "adds with same" do
       (@unit + @unit).to_s.should == @unit.to_s
     end
+
+    it "multiplies with nothing" do
+      (@unit * Unit.new).to_s.should == @unit.to_s
+    end
   end
 
   context "with a complex argument" do
@@ -106,6 +122,10 @@ describe "Unit" do
 
     it "adds with same" do
       (@unit + @unit).to_s.should == @unit.to_s
+    end
+
+    it "multiplies with nothing" do
+      (@unit * Unit.new).to_s.should == @unit.to_s
     end
   end
 end

@@ -69,7 +69,27 @@ class Unit
   end
 end
 
+module Units
+  module Class
+    def new_units(*units)
+      units.each do |u|
+        Units.__send__ :define_method, u do
+          unit(u)
+        end
+      end
+    end
+
+    def included(host)
+      host.extend(Units::Class)
+    end
+  end
+
+  extend Units::Class
+end
+
 module Measurable
+  include Units
+
   def to_s_with_units
     to_s
   end
@@ -84,24 +104,7 @@ module Measurable
 end
 
 module Measured
-  module Class
-    def new_units(*units)
-      units.each do |u|
-        Measured.__send__ :define_method, u do
-          unit(u)
-        end
-        Measurable.__send__ :define_method, u do
-          unit(u)
-        end
-      end
-    end
-  end
-
-  extend Class
-
-  def self.included(host)
-    host.extend(Measured::Class)
-  end
+  include Units
 
   def with_units
     u = @unit.to_s

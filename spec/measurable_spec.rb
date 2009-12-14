@@ -16,7 +16,6 @@ describe Measured do
   end
 
   it "doesn't pollute" do
-    1.s
     1.to_s_with_units.should == "1"
   end
 end

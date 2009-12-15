@@ -21,14 +21,27 @@ class Unit
     self
   end
 
-  def +(other)
+  def binop(other)
     if (unit != other.unit)
       p "#{to_s} !+- #{other.to_s}"
       return Unit.new(:ERROR)
     end
     return self
   end
-  alias_method :-, :+
+
+  def self.binop(op)
+    alias_method op, :binop
+  end
+
+  binop :+
+  binop :-
+  binop :<
+  binop :>
+  binop :==
+  binop :max
+  binop :min
+  binop :&
+  binop :|
 
   def *(other)
     x = @unit.dup
@@ -212,13 +225,22 @@ class Term
   end
 
   def data
-    i,f = to_i,to_f
-    return "Infinity" unless f.finite?
-    if (f.floor == f)
-      i.to_s + with_units
+    f = to_f
+    if (!f.respond_to? :finite)
+      f.to_s + with_units
+    elsif (!f.finite?)
+      Infinity
+    elsif (f.floor == f)
+      f.to_i.to_s + with_units
     else
       f.to_s + with_units
     end
+  end
+
+  def to_i
+    f = to_f
+    return Infinity unless f.finite?
+    f.to_i
   end
 
   def label
@@ -294,11 +316,6 @@ class Constant < Term
     n = @name && (@name + " = ")
     "(#{n}#{to_f})"
   end
-  
-  def to_i
-    return Infinity unless @a.finite?
-    @a.to_i
-  end
 
   def to_f
     @a.to_f
@@ -371,11 +388,6 @@ class Operation::Unary < Operation
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
   end
 
-  def to_i
-    return Infinity unless @a.to_i.finite?
-    @a.to_i.__send__(@op)
-  end
-
   def to_f
     return Infinity unless @a.to_f.finite?
     @a.to_f.__send__(@op)
@@ -427,12 +439,6 @@ class Operation::Binary < Operation
     (g[@b.node] >> g[node]) [:arrowhead => :onormal]
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
     @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)
-  end
-
-  def to_i
-    f = to_f
-    return Infinity unless f.finite?
-    f.to_i
   end
 
   def to_f

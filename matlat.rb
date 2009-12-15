@@ -226,7 +226,9 @@ class Term
 
   def data
     f = to_f
-    if (!f.respond_to? :finite)
+    if (f.kind_of?(TrueClass) || f.kind_of?(FalseClass))
+      f.to_s
+    elsif (!f.respond_to? :finite)
       f.to_s + with_units
     elsif (!f.finite?)
       Infinity

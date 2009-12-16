@@ -231,7 +231,7 @@ class Term
     elsif (!f.respond_to? :finite?)
       f.to_s + with_units
     elsif (!f.finite?)
-      Infinity
+      Infinity.to_s
     elsif (f.floor == f)
       f.to_i.to_s + with_units
     else

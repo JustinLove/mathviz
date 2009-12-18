@@ -292,6 +292,7 @@ class Term
   end
 
   unop :floor
+  unop :ceil
 
   binop :+
   binop :-

@@ -1,4 +1,4 @@
-require 'mathviz'
+require 'example_helper'
 
 module Units
   new_units :ms, :s, :frame

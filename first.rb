@@ -1,4 +1,4 @@
-require 'mathviz.rb'
+require 'example_helper'
 
 MathViz.new('first') {
   pi = const 3.14159

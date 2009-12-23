@@ -1,1 +1,1 @@
-require File.join(File.dirname(__FILE__), '..', 'mathviz')
+require File.join(File.dirname(__FILE__), '..', 'lib', 'mathviz')

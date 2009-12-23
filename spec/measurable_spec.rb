@@ -1,6 +1,4 @@
-require 'rubygems'
-require 'spec'
-require File.join(File.dirname(__FILE__), '..', 'mathviz')
+require File.join(File.dirname(__FILE__), 'spec_helper')
 
 module Units
   new_units :s

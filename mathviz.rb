@@ -23,7 +23,7 @@ class Unit
 
   def binop(other)
     if (unit != other.unit)
-      p "#{to_s} !+- #{other.to_s}"
+      #p "#{to_s} !+- #{other.to_s}"
       return Unit.new(:ERROR)
     end
     return self

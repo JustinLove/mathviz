@@ -7,8 +7,8 @@ shared_examples_for "common combinations" do
     @unit.should_not be_nil
   end
 
-  it "rejects a mismatch" do
-    lambda {@unit + Unit.new(:x)}.should raise_error
+  it "flags a mismatch" do
+    (@unit + Unit.new(:x)).to_s.should == 'ERROR'
   end
 
   it "adds with same" do

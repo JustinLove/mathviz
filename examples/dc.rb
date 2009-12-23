@@ -6,7 +6,7 @@ module Units
   new_units :pixel, :timel
 end
 
-MathViz.new('dc') {
+MathViz.new {
   pi = const 3.14159
   second = 1000.ms.per.s
 

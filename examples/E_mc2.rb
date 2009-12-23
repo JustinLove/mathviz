@@ -4,7 +4,7 @@ module Units
   new_units :m, :s, :kg, :lb, :joule
 end
 
-MathViz.new('E_mc2') {
+MathViz.new {
 
   m = 140.lb * 0.45359237.kg.per.lb
   c = 299_792_458.m.per.s

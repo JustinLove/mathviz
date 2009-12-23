@@ -458,7 +458,7 @@ class Operation::Binary < Operation
 end
 
 
-class MatLat
+class MathViz
   def initialize(name, bind = nil, &proc)
     @name = name
     @env = bind || instance_eval(&proc)

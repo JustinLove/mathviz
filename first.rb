@@ -1,6 +1,6 @@
 require 'matlat.rb'
 
-MatLat.new('first') {
+MathViz.new('first') {
   pi = const 3.14159
 
   scale = input 1.0

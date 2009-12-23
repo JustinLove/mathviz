@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'spec'
-require File.join(File.dirname(__FILE__), '..', 'matlat')
+require File.join(File.dirname(__FILE__), '..', 'mathviz')
 
 class Subject
   include Measured

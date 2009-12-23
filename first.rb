@@ -1,4 +1,4 @@
-require 'matlat.rb'
+require 'mathviz.rb'
 
 MathViz.new('first') {
   pi = const 3.14159

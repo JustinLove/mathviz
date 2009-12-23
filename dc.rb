@@ -1,4 +1,4 @@
-require 'matlat'
+require 'mathviz'
 
 module Units
   new_units :ms, :s, :frame

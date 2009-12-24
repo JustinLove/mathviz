@@ -3,11 +3,19 @@ require 'graphviz_r'
 
 #:include:README.rdoc
 
+# Something to return instead of dividing by zero, etc.
 Infinity = 1.0/0
 
+# Value objects that do the actual unit tracking.
+# 
+# Contains all the interesting power tracking and cancellation.
 class Unit
+  # The interal representation.  Current implementation method is hash-of-powers; e.g. {:m => 2, :s => -1} represents m*m/s
   attr_reader :unit
 
+  # * With a symbol, creates a simple unit.
+  # * With a hash-of-powers, it simply copies those values.
+  # * Otherwise, it becomes a dimensionless unit.
   def initialize(h = nil)
     @unit = Hash.new(0)
     case h
@@ -18,11 +26,7 @@ class Unit
     freeze
   end
 
-  def normalize!
-    unit.reject! { |u,power| power == 0 }
-    self
-  end
-
+  # Implement a simple binary operation.  It verifies that the units match and returns the unit ERROR if not.
   def binop(other)
     if (unit != other.unit)
       #p "#{to_s} !+- #{other.to_s}"
@@ -31,6 +35,7 @@ class Unit
     return self
   end
 
+  # Define a simple binary operatoin
   def self.binop(op)
     alias_method op, :binop
   end
@@ -69,6 +74,17 @@ class Unit
     unit.reject {|u,power| power > 0}
   end
 
+  def to_s
+    n = stream(numerator)
+    d = stream(denominator)
+    return '' unless (n || d)
+    return "#{n||1}/#{d}" if d
+    return n
+  end
+
+  private
+
+  # Produce a string of multiplied terms
   def stream(units)
     x = units.map {|u,power| [u] * power.abs }.flatten.join('*')
     if (x.empty?)
@@ -78,12 +94,10 @@ class Unit
     end
   end
 
-  def to_s
-    n = stream(numerator)
-    d = stream(denominator)
-    return '' unless (n || d)
-    return "#{n||1}/#{d}" if d
-    return n
+  # Remove zero-powers
+  def normalize!
+    unit.reject! { |u,power| power == 0 }
+    self
   end
 end
 

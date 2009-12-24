@@ -33,20 +33,15 @@ class Unit
     return self
   end
 
-  # Define a simple binary operatoin
-  def self.binop(op)
-    alias_method op, :binop
-  end
-
-  binop :+
-  binop :-
-  binop :<
-  binop :>
-  binop :==
-  binop :max
-  binop :min
-  binop :&
-  binop :|
+  alias_method :+, :binop
+  alias_method :-, :binop
+  alias_method :<, :binop
+  alias_method :>, :binop
+  alias_method :==, :binop
+  alias_method :max, :binop
+  alias_method :min, :binop
+  alias_method :&, :binop
+  alias_method :|, :binop
 
   def *(other)
     x = @unit.dup

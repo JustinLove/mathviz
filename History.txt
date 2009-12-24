@@ -2,6 +2,7 @@
 
 * Rename from MatLat to MathViz
 * Default output file name
+* Add rdoc comments and examples
 * Package as gem
 
 === 0.1.0 2009-12-18

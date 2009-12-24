@@ -2,6 +2,7 @@ History.txt
 Manifest.txt
 README.rdoc
 Rakefile
+examples/E_mc2.png
 examples/E_mc2.rb
 examples/dc.rb
 examples/example_helper.rb

@@ -176,23 +176,27 @@ end
 class Numeric
   include Measurable
 
+  # Provide in operator form
   def max(b)
     [self, b].max
   end
 
+  # Provide in operator form
   def min(b)
     [self, b].min
   end
 
+  # Dummy defintion for all numerics.  Normally only defined on things where it can possible return false.
   def finite?
     true
   end
 end
 
+# alias_method :node, :to_s
+#
+# A bare alias doesn't show in rdoc
 class Object
-  def node
-    to_s
-  end
+  alias_method :node, :to_s
 end
 
 class Term

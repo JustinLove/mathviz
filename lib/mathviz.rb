@@ -551,23 +551,32 @@ class Operation::Binary < Operation
   end
 end
 
-
+# Top level object.
 class MathViz
+  # RubyGem version
   VERSION = '1.0.0'
 
+  # * base name of the output file.  If omitted(falsy) it will use the top level program name.
+  # * Binding object, as if from 'binding'
+  # * A proc which returns a binding.
+  #
+  # If bind is passed, the proc will not be executed.  If bind is falsy, the proc will be executed and it's return value stored.
   def initialize(name = nil, bind = nil, &proc)
     @name = name || File.basename($PROGRAM_NAME, '.rb')
     @env = bind || instance_eval(&proc)
   end
 
+  # Convert a basic value (typically Numeric) into a Term (Constant)
   def const(x)
     Constant.new(x)
   end
 
+  # Convert a basic value (typically Numeric) into a Term (Input)
   def input(x)
     Input.new(x)
   end
 
+  # Save a Graphviz .dot file in the current directory, with name specified in the constructor.  Triggers most of the actual processsing.
   def dot
     Term.name_terms!(@env)
     #puts Term.list_terms(@env).map {|t| t.long}

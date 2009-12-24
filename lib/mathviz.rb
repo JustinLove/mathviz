@@ -192,17 +192,19 @@ class Numeric
   end
 end
 
-# alias_method :node, :to_s
-#
-# A bare alias doesn't show in rdoc
 class Object
-  alias_method :node, :to_s
+  # Representation used for graphviz node names
+  def node
+    to_s
+  end
 end
 
+# Base class for graphable objects.  It also contain the operators, which return Operation subclasses.
 class Term
   include Measured
 
-  def self.name_terms(env)
+  # Assign names to named Terms, so the name can be effiently looked up from the Term object.
+  def self.name_terms!(env)
     eval("local_variables", env).each do |var|
       value = eval(var, env)
       if value.respond_to? :name=
@@ -211,6 +213,7 @@ class Term
     end
   end
 
+  # Return a list of all Terms accessible from a binding
   def self.list_terms(env)
     eval("local_variables", env).map { |var|
       value = eval(var, env)
@@ -222,28 +225,28 @@ class Term
     }.compact
   end
 
+  # Define op as a binary operator
   def self.binop(op)
     define_method(op) do |c|
       Operation::Binary.new(self, op, c)
     end
   end
 
+  # Define op as an unary operator
   def self.unop(op)
     define_method(op) do
       Operation::Unary.new(self, op)
     end
   end
 
+  # Graphviz node name; see Term#name_terms!
   attr_accessor :name
 
   def to_s
     @name || anon
   end
 
-  def node
-    to_s
-  end
-
+  # A string representation of the node's data, typically calculated value with units.
   def data
     f = to_f
     if (f.kind_of?(TrueClass) || f.kind_of?(FalseClass))
@@ -265,6 +268,7 @@ class Term
     f.to_i
   end
 
+  # Text label for graph nodes
   def label
     if (@name)
       [data, node].join("\n")
@@ -273,14 +277,17 @@ class Term
     end
   end
 
+  # Graphviz node shape
   def shape
     :ellipse
   end
-  
+
+  # Graphviz node color
   def color
     :black
   end
 
+  # Graphviz node line style
   def style
     if anonymous?
       :dotted
@@ -295,7 +302,10 @@ class Term
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
 
+  private
   @@anon_master = 'A'
+
+  # Produces an unique name for #anonymous? nodes.  Results are memoized for each instance.
   def anon
     if (@anon)
       @anon
@@ -311,21 +321,52 @@ class Term
     !@name
   end
 
+  public
+
+  ##
   unop :floor
+
+  ##
   unop :ceil
 
+
+  ##
   binop :+
+
+  ##
   binop :-
+
+  ##
   binop :*
+
+  ##
   binop :/
+
+  ##
   binop :max
+
+  ##
   binop :min
+
+  ##
   binop :>
+
+  ##
   binop :<
+
+  ##
   binop :<=
+
+  ##
   binop :>=
+
+  ##
   binop :&
+
+  ##
   binop :|
+
+  ##
   binop :==
 end
 
@@ -495,7 +536,7 @@ class MathViz
   end
 
   def dot
-    Term.name_terms(@env)
+    Term.name_terms!(@env)
     #puts Term.list_terms(@env).map {|t| t.long}
     graph = GraphvizR.new @name
     graph = Term.list_terms(@env).inject(graph) {|g, t|

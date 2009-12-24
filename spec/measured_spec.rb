@@ -20,23 +20,23 @@ describe Measured do
   end
 
   it "should have a unit in it's string" do
-    @subject.to_s_with_units.should == "1 s"
+    @subject.with_units.should == " s"
   end
 
   it "should not have extra space if no unit" do
-    Subject.new.to_s_with_units.should == "1"
+    Subject.new.with_units.should == ""
   end
 
   it "can have different units" do
-    Subject.new.unit(:x).to_s_with_units.should == "1 x"
+    Subject.new.unit(:x).with_units.should == " x"
   end
 
   it "should create denominators" do
-    Subject.new.per.s.to_s_with_units.should == "1 1/s"
+    Subject.new.per.s.with_units.should == " 1/s"
   end
 
   it "should have a shorthand for new units" do
     Subject.new_units(:m, :h)
-    Subject.new.m.per.h.to_s_with_units.should == "1 m/h"
+    Subject.new.m.per.h.with_units.should == " m/h"
   end
 end

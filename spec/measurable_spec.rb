@@ -8,8 +8,4 @@ describe Measured do
   it "works on numbers" do
     1.s.data.should == "1 s"
   end
-
-  it "doesn't pollute" do
-    1.to_s_with_units.should == "1"
-  end
 end

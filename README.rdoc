@@ -8,6 +8,12 @@
 
 Turn simple equations (a = b * c) into GraphViz dot files showing relationships, values, and units.
 
+== FEATURES/PROBLEMS:
+
+* Adds one method to Object and several to Numeric (some direct, some by Measurable and Unit.)  If you use units of measure, each unit will appear on Numeric via module Unit.
+* At present, all classes/modules appear at global scope.
+* MathViz produces textual .dot files.  You will need a viewer which supports dot files directly, or Graphviz to convert them to images yourself.
+
 == SYNOPSIS:
 
   require 'rubygems'

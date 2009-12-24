@@ -1,0 +1,16 @@
+=== 1.0.0 2009-12-23
+
+* Rename from MatLat to MathViz
+* Default output file name
+* Package as gem
+
+=== 0.1.0 2009-12-18
+
+* Support unit tracking
+* Unary operators
+* Moved operator out of box
+
+=== 0.0.1 2009-02-12
+
+* Generate Graphs
+* Track values

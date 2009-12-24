@@ -1,0 +1,14 @@
+History.txt
+Manifest.txt
+README.rdoc
+Rakefile
+examples/E_mc2.rb
+examples/dc.rb
+examples/example_helper.rb
+examples/first.rb
+lib/mathviz.rb
+spec/measurable_spec.rb
+spec/measured_spec.rb
+spec/operation_spec.rb
+spec/spec_helper.rb
+spec/unit_spec.rb

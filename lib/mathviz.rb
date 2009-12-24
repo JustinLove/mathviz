@@ -459,6 +459,8 @@ end
 
 
 class MathViz
+  VERSION = '1.0.0'
+
   def initialize(name = nil, bind = nil, &proc)
     @name = name || File.basename($PROGRAM_NAME, '.rb')
     @env = bind || instance_eval(&proc)

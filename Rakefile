@@ -11,7 +11,7 @@ Hoe.plugin :newgem
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.spec 'mathviz' do
-  self.developer 'Justin Love', 'hg@JustinLove.name'
+  self.developer 'Justin Love', 'git@JustinLove.name'
   self.rubyforge_name       = self.name # TODO this is default value
   self.extra_deps         = [['GraphvizR','>= 0.5.1']]
   self.extra_rdoc_files = ['README.rdoc']

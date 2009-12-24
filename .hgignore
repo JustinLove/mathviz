@@ -5,4 +5,5 @@ syntax: glob
 *.dot
 *.png
 *.ps
+*.gemspec
 doc

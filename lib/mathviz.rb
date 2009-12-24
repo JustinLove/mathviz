@@ -298,6 +298,7 @@ class Term
     end
   end
 
+  # Extend Graphviz g with a representation of this object
   def to_dot(g)
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
@@ -370,21 +371,28 @@ class Term
   binop :==
 end
 
+# A simple number.
+#
+# Also identifies the number as true constant, which affects nodes display style, so that opportunities for constant-folding can be idenified.
 class Constant < Term
+  # wraps a primitive value
   def initialize(a)
     super()
     @a = a
   end
 
+  # Debugging method; string with both name and value
   def long
     n = @name && (@name + " = ")
     "(#{n}#{to_f})"
   end
 
+  # Forward to contained object
   def to_f
     @a.to_f
   end
 
+  # Returns the units of the contained object (if any) or else it's own.
   def units
     if @a.respond_to? :units
       @a.units
@@ -393,30 +401,39 @@ class Constant < Term
     end
   end
 
+  # Graphviz node shape
   def shape
     :plaintext
   end
-  
+
   def constant?
     true
   end
 
+  # Forward to contained object
   def finite?
     @a.finite?
   end
 end
 
+# A simple number.
+#
+# Derives most of it's behavior from Constant, but also identifies the number as variable, which affects nodes display style, so that opportunities for constant-folding can be idenified.
 class Input < Constant
+  # Graphiviz node shape
   def shape
     :ellipse
   end
 
+  # false
   def constant?
     false
   end
 end
 
+# Base class for Operation::Binary and Operation::Unary
 class Operation < Term
+  # Turn the object into a Term (Constant) if isn't already a Term.  This allows for operator parameters to be primitive values without needing MathViz#const, MathViz#input, or units.
   def term(x)
     if (x.kind_of?(Term))
       x
@@ -425,15 +442,18 @@ class Operation < Term
     end
   end
 
+  # Graphviz node shape
   def shape
     :box
   end
 
+  # Default Graphviz node color.
   def color
     :red
   end
 end
 
+# Display and processing for single-value operators
 class Operation::Unary < Operation
   def initialize(a, op)
     super()
@@ -441,31 +461,37 @@ class Operation::Unary < Operation
     @op = op
   end
 
+  # Debugging method; return string of name and value.
   def long
     n = @name && (@name + " = ")
     "(#{n}#{@a} #{@op} = #{to_f})"
   end
 
+  # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
     (g[@a.node] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
   end
 
+  # Apply the operator to create the derived value.
   def to_f
     return Infinity unless @a.to_f.finite?
     @a.to_f.__send__(@op)
   end
 
+  # Forward to contained value
   def units
     @a.units
   end
 
+  # Forward to contained value
   def constant?
     @a.constant?
   end
 end
 
+# Display and processing for two-value operators
 class Operation::Binary < Operation
   def initialize(a, op, b)
     super()
@@ -474,11 +500,13 @@ class Operation::Binary < Operation
     @b = term(b)
   end
 
+  # Debugging method; returns string of names and values
   def long
     n = @name && (@name + " = ")
     "(#{n}#{@a} #{@op} #{@b} = #{to_f})"
   end
 
+  # Graphviz node shape; differentiates comparison operators
   def shape
     if ([:>, :<, :>=, :<=, :&, :|, :==].include? @op)
       :ellipse
@@ -487,6 +515,7 @@ class Operation::Binary < Operation
     end
   end
 
+  # Graphviz node color; differentiates basic mathematical operators (+, -, *, /)
   def color
     case @op
     when :+: :green;
@@ -497,6 +526,7 @@ class Operation::Binary < Operation
     end
   end
 
+  # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
     (g[@a.node] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
@@ -505,14 +535,17 @@ class Operation::Binary < Operation
     @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)
   end
 
+  # Apply the operator to create the derived value.
   def to_f
     @a.to_f.__send__(@op, @b.to_f)
   end
 
+  # Apply the operator to create the derived units.
   def units
     @a.units.__send__(@op, @b.units)
   end
 
+  # True only if both operands are #constant?
   def constant?
     @a.constant? && @b.constant?
   end

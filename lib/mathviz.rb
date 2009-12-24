@@ -94,8 +94,14 @@ class Unit
   end
 end
 
+# Common container for defined units.
+#
+# including Units triggers extension by Units::Class.  Units includes Units::Class itself, so all those methods are available.
 module Units
+  # Provides the new_units class method to all classes with units
   module Class
+    # Define new units (instance methods) on module Units (where they will be picked up by everything including the module)
+    # Defined methods are essentialy aliases for #unit(name); see Measurable / Measured
     def new_units(*units)
       units.each do |u|
         Units.__send__ :define_method, u do
@@ -104,6 +110,7 @@ module Units
       end
     end
 
+    # extend Units::Class
     def included(host)
       host.extend(Units::Class)
     end
@@ -112,25 +119,26 @@ module Units
   extend Units::Class
 end
 
+# Something (i.e. Numeric) which does not have Units, but can be turned into something which does (i.e., Constant)
 module Measurable
   include Units
 
-  def to_s_with_units
-    to_s
-  end
-
+  # return constant wrapping self with the specified units; see also Units::Class#new_units
   def unit(x)
     Constant.new(self).unit(x)
   end
 
+  # return constant wrapping self with new units assigned to the denominator
   def per
     Constant.new(self).per
   end
 end
 
+# Something (i.e. Term) which has Units.
 module Measured
   include Units
 
+  # Return a string representation of the units portion, with space if applicable
   def with_units
     u = units.to_s
     if (u.empty?)
@@ -140,10 +148,7 @@ module Measured
     end
   end
 
-  def to_s_with_units
-    to_s + with_units
-  end
-
+  # Add the named unit to our units and return self.  See also Units::Class#new_units
   def unit(x)
     @unit ||= Unit.new
     @unit_sign ||= 1
@@ -155,12 +160,14 @@ module Measured
     self
   end
 
+  # Statefull toggle numerator/denominator of unit assignment; e.g. m/s = .m.per.s
   def per
     @unit_sign ||= 1
     @unit_sign *= -1
     self
   end
 
+  # attr_reader
   def units
     @unit || Unit.new
   end

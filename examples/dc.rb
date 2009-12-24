@@ -1,4 +1,5 @@
-require 'example_helper'
+require 'rubygems'
+require 'mathviz'
 
 module Units
   new_units :ms, :s, :frame

@@ -1,4 +1,5 @@
-require 'example_helper'
+require 'rubygems'
+require 'mathviz'
 
 # No units are provided by default.
 # You can also use 1.unit(:m).per.unit(:s) etc.

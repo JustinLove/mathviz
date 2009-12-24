@@ -1,4 +1,5 @@
-require 'example_helper'
+require 'rubygems'
+require 'mathviz'
 
 MathViz.new('first') {
   pi = const 3.14159

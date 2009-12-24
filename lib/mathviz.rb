@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'graphviz_r'
 
+#:include:README.rdoc
+
 Infinity = 1.0/0
 
 class Unit

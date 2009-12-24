@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'graphviz_r'
 
-#:include:README.rdoc
-
 # Something to return instead of dividing by zero, etc.
 Infinity = 1.0/0
 

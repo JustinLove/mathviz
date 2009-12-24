@@ -14,7 +14,7 @@ $hoe = Hoe.spec 'mathviz' do
   self.developer 'Justin Love', 'hg@JustinLove.name'
   self.rubyforge_name       = self.name # TODO this is default value
   self.extra_deps         = [['GraphvizR','>= 0.5.1']]
-
+  self.extra_rdoc_files = ['README.rdoc']
 end
 
 require 'newgem/tasks'

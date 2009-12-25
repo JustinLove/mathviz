@@ -3,7 +3,7 @@ require 'mathviz'
 
 # No units are provided by default.
 # You can also use 1.unit(:m).per.unit(:s) etc.
-module Units
+module MathViz::Units
   new_units :m, :s, :kg, :lb, :joule
 end
 

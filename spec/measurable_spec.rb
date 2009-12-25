@@ -1,10 +1,10 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
-module Units
+module MathViz::Units
   new_units :s
 end
 
-describe Measured do
+describe MathViz::Measured do
   it "works on numbers" do
     1.s.data.should == "1 s"
   end

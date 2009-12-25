@@ -1,13 +1,53 @@
 require 'rubygems'
 require 'graphviz_r'
 
-# Something to return instead of dividing by zero, etc.
-Infinity = 1.0/0
+# Top level object.
+class MathViz
+  # RubyGem version
+  VERSION = '1.0.0'
+
+  # Something to return instead of dividing by zero, etc.
+  Infinity = 1.0/0
+
+  # * base name of the output file.  If omitted(falsy) it will use the top level program name.
+  # * Binding object, as if from 'binding'
+  # * A proc which returns a binding.
+  #
+  # If bind is passed, the proc will not be executed.  If bind is falsy, the proc will be executed and it's return value stored.
+  def initialize(name = nil, bind = nil, &proc)
+    @name = name || File.basename($PROGRAM_NAME, '.rb')
+    @env = bind || instance_eval(&proc)
+  end
+
+  # Convert a basic value (typically Numeric) into a MathViz::Term (MathViz::Constant)
+  def const(x)
+    MathViz::Constant.new(x)
+  end
+
+  # Convert a basic value (typically Numeric) into a MathViz::Term (MathViz::Input)
+  def input(x)
+    MathViz::Input.new(x)
+  end
+
+  # Save a Graphviz .dot file in the current directory, with name specified in the constructor.  Triggers most of the actual processsing.
+  def dot
+    MathViz::Term.name_terms!(@env)
+    #puts MathViz::Term.list_terms(@env).map {|t| t.long}
+    graph = GraphvizR.new @name
+    graph = MathViz::Term.list_terms(@env).inject(graph) {|g, t|
+      t.to_dot(g)
+      g
+    }
+
+    #puts graph.to_dot
+    graph.output(@name + '.dot', 'dot')
+  end
+end
 
 # Value objects that do the actual unit tracking.
 # 
 # Contains all the interesting power tracking and cancellation.
-class Unit
+class MathViz::Unit
   # The interal representation.  Current implementation method is hash-of-powers; e.g. {:m => 2, :s => -1} represents m*m/s
   attr_reader :unit
 
@@ -28,7 +68,7 @@ class Unit
   def binop(other)
     if (unit != other.unit)
       #p "#{to_s} !+- #{other.to_s}"
-      return Unit.new(:ERROR)
+      return MathViz::Unit.new(:ERROR)
     end
     return self
   end
@@ -48,7 +88,7 @@ class Unit
     other.unit.each do |u,power|
       x[u] += power
     end
-    Unit.new(x)
+    MathViz::Unit.new(x)
   end
 
   def /(other)
@@ -56,7 +96,7 @@ class Unit
     other.unit.each do |u,power|
       x[u] -= power
     end
-    Unit.new(x)
+    MathViz::Unit.new(x)
   end
 
   def numerator
@@ -96,47 +136,47 @@ end
 
 # Common container for defined units.
 #
-# including Units triggers extension by Units::Class.  Units includes Units::Class itself, so all those methods are available.
-module Units
+# including MathViz::Units triggers extension by MathViz::Units::Class.  MathViz::Units includes MathViz::Units::Class itself, so all those methods are available.
+module MathViz::Units
   # Provides the new_units class method to all classes with units
   module Class
-    # Define new units (instance methods) on module Units (where they will be picked up by everything including the module)
-    # Defined methods are essentialy aliases for #unit(name); see Measurable / Measured
+    # Define new units (instance methods) on module MathViz::Units (where they will be picked up by everything including the module)
+    # Defined methods are essentialy aliases for #unit(name); see MathViz::Measurable / MathViz::Measured
     def new_units(*units)
       units.each do |u|
-        Units.__send__ :define_method, u do
+        MathViz::Units.__send__ :define_method, u do
           unit(u)
         end
       end
     end
 
-    # extend Units::Class
+    # extend MathViz::Units::Class
     def included(host)
-      host.extend(Units::Class)
+      host.extend(MathViz::Units::Class)
     end
   end
 
-  extend Units::Class
+  extend MathViz::Units::Class
 end
 
-# Something (i.e. Numeric) which does not have Units, but can be turned into something which does (i.e., Constant)
-module Measurable
-  include Units
+# Something (i.e. Numeric) which does not have MathViz::Units, but can be turned into something which does (i.e., MathViz::Constant)
+module MathViz::Measurable
+  include MathViz::Units
 
-  # return constant wrapping self with the specified units; see also Units::Class#new_units
+  # return constant wrapping self with the specified units; see also MathViz::Units::Class#new_units
   def unit(x)
-    Constant.new(self).unit(x)
+    MathViz::Constant.new(self).unit(x)
   end
 
   # return constant wrapping self with new units assigned to the denominator
   def per
-    Constant.new(self).per
+    MathViz::Constant.new(self).per
   end
 end
 
-# Something (i.e. Term) which has Units.
-module Measured
-  include Units
+# Something (i.e. MathViz::Term) which has MathViz::Units.
+module MathViz::Measured
+  include MathViz::Units
 
   # Return a string representation of the units portion, with space if applicable
   def with_units
@@ -148,14 +188,14 @@ module Measured
     end
   end
 
-  # Add the named unit to our units and return self.  See also Units::Class#new_units
+  # Add the named unit to our units and return self.  See also MathViz::Units::Class#new_units
   def unit(x)
-    @unit ||= Unit.new
+    @unit ||= MathViz::Unit.new
     @unit_sign ||= 1
     if (@unit_sign > 0)
-      @unit *= Unit.new(x)
+      @unit *= MathViz::Unit.new(x)
     else
-      @unit /= Unit.new(x)
+      @unit /= MathViz::Unit.new(x)
     end
     self
   end
@@ -169,12 +209,12 @@ module Measured
 
   # attr_reader
   def units
-    @unit || Unit.new
+    @unit || MathViz::Unit.new
   end
 end
 
 class Numeric
-  include Measurable
+  include MathViz::Measurable
 
   # Provide in operator form
   def max(b)
@@ -199,11 +239,11 @@ class Object
   end
 end
 
-# Base class for graphable objects.  It also contain the operators, which return Operation subclasses.
-class Term
-  include Measured
+# Base class for graphable objects.  It also contain the operators, which return MathViz::Operation subclasses.
+class MathViz::Term
+  include MathViz::Measured
 
-  # Assign names to named Terms, so the name can be effiently looked up from the Term object.
+  # Assign names to named MathViz::Terms, so the name can be effiently looked up from the MathViz::Term object.
   def self.name_terms!(env)
     eval("local_variables", env).each do |var|
       value = eval(var, env)
@@ -213,11 +253,11 @@ class Term
     end
   end
 
-  # Return a list of all Terms accessible from a binding
+  # Return a list of all MathViz::Terms accessible from a binding
   def self.list_terms(env)
     eval("local_variables", env).map { |var|
       value = eval(var, env)
-      if (value.kind_of?(Term))
+      if (value.kind_of?(MathViz::Term))
         value
       else
         nil
@@ -228,18 +268,18 @@ class Term
   # Define op as a binary operator
   def self.binop(op)
     define_method(op) do |c|
-      Operation::Binary.new(self, op, c)
+      MathViz::Operation::Binary.new(self, op, c)
     end
   end
 
   # Define op as an unary operator
   def self.unop(op)
     define_method(op) do
-      Operation::Unary.new(self, op)
+      MathViz::Operation::Unary.new(self, op)
     end
   end
 
-  # Graphviz node name; see Term#name_terms!
+  # Graphviz node name; see MathViz::Term#name_terms!
   attr_accessor :name
 
   def to_s
@@ -254,7 +294,7 @@ class Term
     elsif (!f.respond_to? :finite?)
       f.to_s + with_units
     elsif (!f.finite?)
-      Infinity.to_s
+      MathViz::Infinity.to_s
     elsif (f.floor == f)
       f.to_i.to_s + with_units
     else
@@ -264,7 +304,7 @@ class Term
 
   def to_i
     f = to_f
-    return Infinity unless f.finite?
+    return MathViz::Infinity unless f.finite?
     f.to_i
   end
 
@@ -374,7 +414,7 @@ end
 # A simple number.
 #
 # Also identifies the number as true constant, which affects nodes display style, so that opportunities for constant-folding can be idenified.
-class Constant < Term
+class MathViz::Constant < MathViz::Term
   # wraps a primitive value
   def initialize(a)
     super()
@@ -418,8 +458,8 @@ end
 
 # A simple number.
 #
-# Derives most of it's behavior from Constant, but also identifies the number as variable, which affects nodes display style, so that opportunities for constant-folding can be idenified.
-class Input < Constant
+# Derives most of it's behavior from MathViz::Constant, but also identifies the number as variable, which affects nodes display style, so that opportunities for constant-folding can be idenified.
+class MathViz::Input < MathViz::Constant
   # Graphiviz node shape
   def shape
     :ellipse
@@ -431,14 +471,14 @@ class Input < Constant
   end
 end
 
-# Base class for Operation::Binary and Operation::Unary
-class Operation < Term
-  # Turn the object into a Term (Constant) if isn't already a Term.  This allows for operator parameters to be primitive values without needing MathViz#const, MathViz#input, or units.
+# Base class for MathViz::Operation::Binary and MathViz::Operation::Unary
+class MathViz::Operation < MathViz::Term
+  # Turn the object into a MathViz::Term (MathViz::Constant) if isn't already a MathViz::Term.  This allows for operator parameters to be primitive values without needing MathViz#const, MathViz#input, or units.
   def term(x)
-    if (x.kind_of?(Term))
+    if (x.kind_of?(MathViz::Term))
       x
     else
-      Constant.new(x)
+      MathViz::Constant.new(x)
     end
   end
 
@@ -454,7 +494,7 @@ class Operation < Term
 end
 
 # Display and processing for single-value operators
-class Operation::Unary < Operation
+class MathViz::Operation::Unary < MathViz::Operation
   def initialize(a, op)
     super()
     @a = term(a)
@@ -476,7 +516,7 @@ class Operation::Unary < Operation
 
   # Apply the operator to create the derived value.
   def to_f
-    return Infinity unless @a.to_f.finite?
+    return MathViz::Infinity unless @a.to_f.finite?
     @a.to_f.__send__(@op)
   end
 
@@ -492,7 +532,7 @@ class Operation::Unary < Operation
 end
 
 # Display and processing for two-value operators
-class Operation::Binary < Operation
+class MathViz::Operation::Binary < MathViz::Operation
   def initialize(a, op, b)
     super()
     @a = term(a)
@@ -548,45 +588,5 @@ class Operation::Binary < Operation
   # True only if both operands are #constant?
   def constant?
     @a.constant? && @b.constant?
-  end
-end
-
-# Top level object.
-class MathViz
-  # RubyGem version
-  VERSION = '1.0.0'
-
-  # * base name of the output file.  If omitted(falsy) it will use the top level program name.
-  # * Binding object, as if from 'binding'
-  # * A proc which returns a binding.
-  #
-  # If bind is passed, the proc will not be executed.  If bind is falsy, the proc will be executed and it's return value stored.
-  def initialize(name = nil, bind = nil, &proc)
-    @name = name || File.basename($PROGRAM_NAME, '.rb')
-    @env = bind || instance_eval(&proc)
-  end
-
-  # Convert a basic value (typically Numeric) into a Term (Constant)
-  def const(x)
-    Constant.new(x)
-  end
-
-  # Convert a basic value (typically Numeric) into a Term (Input)
-  def input(x)
-    Input.new(x)
-  end
-
-  # Save a Graphviz .dot file in the current directory, with name specified in the constructor.  Triggers most of the actual processsing.
-  def dot
-    Term.name_terms!(@env)
-    #puts Term.list_terms(@env).map {|t| t.long}
-    graph = GraphvizR.new @name
-    graph = Term.list_terms(@env).inject(graph) {|g, t|
-      t.to_dot(g)
-      g
-    }
-
-    #puts graph.to_dot
-    graph.output(@name + '.dot', 'dot')
   end
 end

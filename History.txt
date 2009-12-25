@@ -4,6 +4,7 @@
 * Default output file name
 * Add rdoc comments and examples
 * Package as gem
+* Included classes/modules under MathViz namespace
 
 === 0.1.0 2009-12-18
 

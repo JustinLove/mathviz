@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 class Subject
-  include Measured
+  include MathViz::Measured
 
   new_units :s
 
@@ -10,7 +10,7 @@ class Subject
   end
 end
 
-describe Measured do
+describe MathViz::Measured do
   before do
     @subject = Subject.new.s
   end

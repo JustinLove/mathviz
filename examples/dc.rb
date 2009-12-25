@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'mathviz'
 
-module Units
+module MathViz::Units
   new_units :ms, :s, :frame
   new_units :rev, :xx
   new_units :pixel, :timel

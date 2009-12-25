@@ -36,7 +36,6 @@ Turn simple equations (a = b * c) into GraphViz dot files showing relationships,
   }.dot # Required to produces the actual .dot file
 
 link:examples/E_mc2.png
-link:../examples/E_mc2.png
 == REQUIREMENTS:
 
 * GraphvizR (aka graphviz_r)

@@ -14,6 +14,8 @@ class MathViz
   # * A proc which returns a binding.
   #
   # If bind is passed, the proc will not be executed.  If bind is falsy, the proc will be executed and it's return value stored.
+  #
+  # The proc is evaluated in the context of the new MathViz instance, making #const and #input directly available
   def initialize(name = nil, bind = nil, &proc)
     @name = name || File.basename($PROGRAM_NAME, '.rb')
     @env = bind || instance_eval(&proc)

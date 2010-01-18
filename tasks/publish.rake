@@ -1,5 +1,5 @@
 task :publish => [:idocs]  do |t|
-  target = '~/files/web/wml/gems/mathviz'
-  sh "rm -r #{target}"
-  sh "mv doc #{target}"
+  target = File.expand_path '~/files/web/wml/gems/mathviz'
+  rm_r(target) if File.exist?(target)
+  mv 'doc', target
 end

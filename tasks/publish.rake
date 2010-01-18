@@ -1,7 +1,4 @@
 task :publish => [:idocs]  do |t|
-  begin
-    rm '~/files/web/wml/gems/mathviz'
-  rescue
-  end
-  `mv doc ~/files/web/wml/gems/mathviz`
+  sh 'rm -r ~/files/web/wml/gems/mathviz'
+  sh 'mv doc ~/files/web/wml/gems/mathviz'
 end

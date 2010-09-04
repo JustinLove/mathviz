@@ -59,7 +59,7 @@ class MathViz::Unit
     @unit = Hash.new(0)
     case h
     when Hash; @unit.merge!(h); normalize!
-    when Symbol: @unit[h] = 1
+    when Symbol; @unit[h] = 1
     end
     @unit.freeze
     freeze
@@ -247,7 +247,7 @@ class MathViz::Term
   # Assign names to named MathViz::Terms, so the name can be effiently looked up from the MathViz::Term object.
   def self.name_terms!(env)
     eval("local_variables", env).each do |var|
-      value = eval(var, env)
+      value = eval(var.to_s, env)
       if value.respond_to? :name=
         value.name = var
       end
@@ -257,7 +257,7 @@ class MathViz::Term
   # Return a list of all MathViz::Terms accessible from a binding
   def self.list_terms(env)
     eval("local_variables", env).map { |var|
-      value = eval(var, env)
+      value = eval(var.to_s, env)
       if (value.kind_of?(MathViz::Term))
         value
       else
@@ -559,11 +559,11 @@ class MathViz::Operation::Binary < MathViz::Operation
   # Graphviz node color; differentiates basic mathematical operators (+, -, *, /)
   def color
     case @op
-    when :+: :green;
-    when :-: :yellow;
-    when :*: :blue;
-    when :/: :cyan;
-    else :red;
+    when :+; :green;
+    when :-; :yellow;
+    when :*; :blue;
+    when :/; :cyan;
+    else     :red;
     end
   end
 

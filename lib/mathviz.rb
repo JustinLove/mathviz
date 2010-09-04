@@ -3,7 +3,7 @@ require 'graphviz_r'
 # Top level object.
 class MathViz
   # RubyGem version
-  VERSION = '1.0.1'
+  VERSION = '1.0.2'
 
   # Something to return instead of dividing by zero, etc.
   Infinity = 1.0/0
@@ -249,7 +249,7 @@ class MathViz::Term
     eval("local_variables", env).each do |var|
       value = eval(var.to_s, env)
       if value.respond_to? :name=
-        value.name = var
+        value.name = var.to_s
       end
     end
   end

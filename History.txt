@@ -1,3 +1,7 @@
+=== 1.0.2 2010-09-04
+
+* Set variable names as strings intead of symbols
+
 === 1.0.1 2010-09-04
 
 * Syntax and path updates for 1.9.2

@@ -3,7 +3,7 @@ require 'graphviz_r'
 # Top level object.
 class MathViz
   # RubyGem version
-  VERSION = '1.0.0'
+  VERSION = '1.0.1'
 
   # Something to return instead of dividing by zero, etc.
   Infinity = 1.0/0

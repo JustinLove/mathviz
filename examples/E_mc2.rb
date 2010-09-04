@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'mathviz'
 
 # No units are provided by default.

@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'graphviz_r'
 
 # Top level object.

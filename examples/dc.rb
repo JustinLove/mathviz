@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'mathviz'
 
 module MathViz::Units

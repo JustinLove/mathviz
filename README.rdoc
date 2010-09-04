@@ -15,7 +15,6 @@ Turn simple equations (a = b * c) into GraphViz dot files showing relationships,
 
 == SYNOPSIS:
 
-  require 'rubygems'
   require 'mathviz'
   
   # No units are provided by default.

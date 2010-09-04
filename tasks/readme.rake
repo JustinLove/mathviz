@@ -4,7 +4,7 @@ end
 
 file "examples/E_mc2.png" => ['examples/E_mc2.rb', 'lib/mathviz.rb'] do |t|
   cd 'examples' do
-    ruby 'E_mc2.rb'
+    ruby '-I../lib E_mc2.rb'
     sh "dot -Tpng -oE_mc2.png E_mc2.dot"
   end
 end

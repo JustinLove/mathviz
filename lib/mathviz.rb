@@ -1,6 +1,7 @@
 require 'graphviz_r'
 
 # Top level object.
+# part 1/2
 class MathViz
   # RubyGem version
   VERSION = '1.0.2'
@@ -186,14 +187,14 @@ end
 module MathViz::Measurable
   include MathViz::Units
 
-  # return constant wrapping self with the specified units; see also MathViz::Units::Class#new_units
+  # return term wrapping self with the specified units; see also MathViz::Units::Class#new_units
   def unit(x)
-    MathViz::Constant.new(self).unit(x)
+    MathViz.default_term.new(self).unit(x)
   end
 
-  # return constant wrapping self with new units assigned to the denominator
+  # return term wrapping self with new units assigned to the denominator
   def per
-    MathViz::Constant.new(self).per
+    MathViz.default_term.new(self).per
   end
 end
 
@@ -491,6 +492,29 @@ class MathViz::Input < MathViz::Constant
   # false
   def constant?
     false
+  end
+end
+
+# Top level object.
+# part 2/2
+class MathViz
+  def When(desc = nil)
+    @@default_term = Input
+  end
+
+  def Given(desc = nil)
+    @@default_term = Constant
+  end
+
+  def Then(desc = nil)
+    @@default_term = Constant
+  end
+
+  def And(desc = nil)
+  end
+
+  def self.default_term
+    @@default_term ||= Constant
   end
 end
 

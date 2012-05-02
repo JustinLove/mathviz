@@ -1,6 +1,7 @@
 === 1.1.0 2012-05-02
 
 * Streamlined syntax for unit/operation extension
+  * Replace MathViz::Unit#binop with MathViz::Unit#binary_operator, or use the new shorthand syntax MathViz#binop
 * When/Given/Then comment methods can set up default-to-input mode
 * Print output filename
 * Tax example

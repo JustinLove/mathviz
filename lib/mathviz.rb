@@ -196,6 +196,11 @@ module MathViz::Measurable
   def per
     MathViz.default_term.new(self).per
   end
+
+  # api method for unwrapping terms
+  def to_value
+    self
+  end
 end
 
 # Something (i.e. MathViz::Term) which has MathViz::Units.
@@ -234,6 +239,11 @@ module MathViz::Measured
   # attr_reader
   def units
     @unit || MathViz::Unit.new
+  end
+
+  # api method for unwrapping terms
+  def to_value
+    to_f
   end
 end
 
@@ -312,7 +322,7 @@ class MathViz::Term
 
   # A string representation of the node's data, typically calculated value with units.
   def data
-    f = to_f
+    f = to_value
     if (f.kind_of?(TrueClass) || f.kind_of?(FalseClass))
       f.to_s
     elsif (!f.respond_to? :finite?)
@@ -327,7 +337,7 @@ class MathViz::Term
   end
 
   def to_i
-    f = to_f
+    f = to_value
     return MathViz::Infinity unless f.finite?
     f.to_i
   end
@@ -448,12 +458,12 @@ class MathViz::Constant < MathViz::Term
   # Debugging method; string with both name and value
   def long
     n = @name && (@name + " = ")
-    "(#{n}#{to_f})"
+    "(#{n}#{to_value})"
   end
 
   # Forward to contained object
-  def to_f
-    @a.to_f
+  def to_value
+    @a.to_value
   end
 
   # Returns the units of the contained object (if any) or else it's own.
@@ -498,19 +508,19 @@ end
 # Top level object.
 # part 2/2
 class MathViz
-  def When(desc = nil)
+  def When(desc)
     @@default_term = Input
   end
 
-  def Given(desc = nil)
+  def Given(desc)
     @@default_term = Constant
   end
 
-  def Then(desc = nil)
+  def Then(desc)
     @@default_term = Constant
   end
 
-  def And(desc = nil)
+  def And(desc)
   end
 
   def self.default_term
@@ -551,7 +561,7 @@ class MathViz::Operation::Unary < MathViz::Operation
   # Debugging method; return string of name and value.
   def long
     n = @name && (@name + " = ")
-    "(#{n}#{@a} #{@op} = #{to_f})"
+    "(#{n}#{@a} #{@op} = #{to_value})"
   end
 
   # Extend Graphviz g with a representation of this object, and incoming connections
@@ -562,9 +572,9 @@ class MathViz::Operation::Unary < MathViz::Operation
   end
 
   # Apply the operator to create the derived value.
-  def to_f
-    return MathViz::Infinity unless @a.to_f.finite?
-    @a.to_f.__send__(@op)
+  def to_value
+    return MathViz::Infinity unless @a.to_value.finite?
+    @a.to_value.__send__(@op)
   end
 
   # Forward to contained value
@@ -590,7 +600,7 @@ class MathViz::Operation::Binary < MathViz::Operation
   # Debugging method; returns string of names and values
   def long
     n = @name && (@name + " = ")
-    "(#{n}#{@a} #{@op} #{@b} = #{to_f})"
+    "(#{n}#{@a} #{@op} #{@b} = #{to_value})"
   end
 
   # Graphviz node shape; differentiates comparison operators
@@ -623,8 +633,8 @@ class MathViz::Operation::Binary < MathViz::Operation
   end
 
   # Apply the operator to create the derived value.
-  def to_f
-    @a.to_f.__send__(@op, @b.to_f)
+  def to_value
+    @a.to_value.__send__(@op, @b.to_value)
   end
 
   # Apply the operator to create the derived units.

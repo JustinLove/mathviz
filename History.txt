@@ -1,3 +1,10 @@
+=== 1.1.0 2012-05-02
+
+* Streamlined syntax for unit/operation extension
+* When/Given/Then comment methods can set up default-to-input mode
+* Print output filename
+* Tax example
+
 === 1.0.2 2010-09-04
 
 * Set variable names as strings intead of symbols

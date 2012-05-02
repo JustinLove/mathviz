@@ -508,18 +508,22 @@ end
 # Top level object.
 # part 2/2
 class MathViz
+  # Comment that identifies a set of inputs.  Subsequent measured values will be marked as #input
   def When(desc)
     @@default_term = Input
   end
 
+  # Comment that identifies a set of constants.  Subsequent measured values will be marked as #const
   def Given(desc)
     @@default_term = Constant
   end
 
+  # Comment that identifies a section of calculations on the inputs and constants.
   def Then(desc)
     @@default_term = Constant
   end
 
+  # Comment which reads a little better than repetition.
   def And(desc)
   end
 

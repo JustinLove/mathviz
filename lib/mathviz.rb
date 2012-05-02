@@ -30,6 +30,23 @@ class MathViz
     MathViz::Input.new(x)
   end
 
+  # Define new units (instance methods) on module MathViz::Units (where they will be picked up by everything including the module)
+  # Defined methods are essentialy aliases for #unit(name); see MathViz::Measurable / MathViz::Measured
+  def new_units(*units)
+    MathViz::Units.new_units(*units)
+  end
+
+  # Define op as a binary operator
+  def binop(op)
+    MathViz::Term.binop op
+    MathViz::Unit.binop op
+  end
+
+  # Define op as unary operator
+  def unop(op)
+    MathViz::Term.unop op
+  end
+
   # Save a Graphviz .dot file in the current directory, with name specified in the constructor.  Triggers most of the actual processsing.
   def dot
     MathViz::Term.name_terms!(@env)
@@ -40,8 +57,9 @@ class MathViz
       g
     }
 
-    #puts graph.to_dot
-    graph.output(@name + '.dot', 'dot')
+    filename = @name + '.dot'
+    graph.output(filename, 'dot')
+    puts "Wrote #{filename}"
   end
 end
 
@@ -66,7 +84,7 @@ class MathViz::Unit
   end
 
   # Implement a simple binary operation.  It verifies that the units match and returns the unit ERROR if not.
-  def binop(other)
+  def binary_operator(other)
     if (unit != other.unit)
       #p "#{to_s} !+- #{other.to_s}"
       return MathViz::Unit.new(:ERROR)
@@ -74,15 +92,19 @@ class MathViz::Unit
     return self
   end
 
-  alias_method :+, :binop
-  alias_method :-, :binop
-  alias_method :<, :binop
-  alias_method :>, :binop
-  alias_method :==, :binop
-  alias_method :max, :binop
-  alias_method :min, :binop
-  alias_method :&, :binop
-  alias_method :|, :binop
+  def self.binop(other)
+    alias_method other, :binary_operator
+  end
+
+  binop :+
+  binop :-
+  binop :<
+  binop :>
+  binop :==
+  binop :max
+  binop :min
+  binop :&
+  binop :|
 
   def *(other)
     x = @unit.dup

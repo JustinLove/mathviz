@@ -6,6 +6,7 @@ examples/E_mc2.png
 examples/E_mc2.rb
 examples/dc.rb
 examples/first.rb
+examples/tax.rb
 lib/mathviz.rb
 spec/measurable_spec.rb
 spec/measured_spec.rb

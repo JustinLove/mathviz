@@ -251,9 +251,8 @@ module MathViz::Measured
   end
 end
 
-class Numeric
-  include MathViz::Measurable
-
+# Namespaced extensions
+module MathViz::NumericOperations
   # Provide in operator form
   def max(b)
     [self, b].max
@@ -270,11 +269,20 @@ class Numeric
   end
 end
 
-class Object
-  # Representation used for graphviz node names
+class Numeric
+  include MathViz::Measurable
+  include MathViz::NumericOperations
+end
+
+# Namespaced extensions
+module MathViz::Graphable
   def node
     to_s
   end
+end
+
+class Object
+  include MathViz::Graphable
 end
 
 # Base class for graphable objects.  It also contain the operators, which return MathViz::Operation subclasses.
@@ -575,7 +583,7 @@ class MathViz::Operation::Unary < MathViz::Operation
   # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
-    (g[@a.node] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
+    (g[@a.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
   end
 
@@ -634,8 +642,8 @@ class MathViz::Operation::Binary < MathViz::Operation
   # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
-    (g[@a.node] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
-    (g[@b.node] >> g[node]) [:arrowhead => :onormal]
+    (g[@a.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
+    (g[@b.to_s] >> g[node]) [:arrowhead => :onormal]
     @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
     @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)
   end

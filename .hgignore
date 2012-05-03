@@ -6,5 +6,6 @@ syntax: glob
 *.png
 *.ps
 *.gemspec
+Gemfile.lock
 doc
 pkg

@@ -389,6 +389,10 @@ class MathViz::Term
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
 
+  def generate?(t = self)
+    t.respond_to?(:name) && t.name.nil?
+  end
+
   private
   @@anon_master = 'A'
 
@@ -564,6 +568,11 @@ class MathViz::Operation < MathViz::Term
   def color
     :red
   end
+
+  def link_from(g, other)
+    (g[other.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
+    other.to_dot(g) if generate?(other)
+  end
 end
 
 # Display and processing for single-value operators
@@ -583,8 +592,7 @@ class MathViz::Operation::Unary < MathViz::Operation
   # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
-    (g[@a.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
-    @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
+    link_from(g, @a)
   end
 
   # Apply the operator to create the derived value.
@@ -642,10 +650,8 @@ class MathViz::Operation::Binary < MathViz::Operation
   # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
-    (g[@a.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
-    (g[@b.to_s] >> g[node]) [:arrowhead => :onormal]
-    @a.to_dot(g) if (@a.respond_to?(:name) && @a.name.nil?)
-    @b.to_dot(g) if (@b.respond_to?(:name) && @b.name.nil?)
+    link_from(g, @a)
+    link_from(g, @b)
   end
 
   # Apply the operator to create the derived value.

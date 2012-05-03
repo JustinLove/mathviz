@@ -199,7 +199,11 @@ module MathViz::Measurable
 
   # api method for unwrapping terms
   def to_value
-    self
+    if kind_of? Numeric
+      to_f
+    else
+      self
+    end
   end
 end
 

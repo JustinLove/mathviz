@@ -389,8 +389,8 @@ class MathViz::Term
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
 
-  def generate?(t = self)
-    t.respond_to?(:name) && t.name.nil?
+  def generated?
+    !name.nil?
   end
 
   private
@@ -571,7 +571,7 @@ class MathViz::Operation < MathViz::Term
 
   def link_from(g, other)
     (g[other.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
-    other.to_dot(g) if generate?(other)
+    other.to_dot(g) unless other.generated?
   end
 end
 

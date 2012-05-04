@@ -1,7 +1,6 @@
 require 'graphviz_r'
 
 # Top level object.
-# part 1/2
 class MathViz
   # RubyGem version
   VERSION = '1.1.0'
@@ -61,6 +60,38 @@ class MathViz
     filename = @name + '.dot'
     graph.output(filename, 'dot')
     puts "Wrote #{filename}"
+  end
+
+  # Comment that identifies a set of inputs.  Subsequent measured values will be marked as #input
+  def When(desc)
+    @@default_term = Input
+  end
+
+  # Comment that identifies a set of constants.  Subsequent measured values will be marked as #const
+  def Given(desc)
+    @@default_term = Constant
+  end
+
+  # Comment that identifies a section of calculations on the inputs and constants.
+  def Then(desc)
+    @@default_term = Constant
+  end
+
+  # Comment which reads a little better than repetition.
+  def And(desc)
+  end
+
+  def self.default_term
+    @@default_term ||= Constant
+  end
+
+  # Turn the object into a MathViz::Term (MathViz::Constant) if isn't already a MathViz::Term.  This allows for operator parameters to be primitive values without needing MathViz#const, MathViz#input, or units.
+  def self.term(x)
+    if (x.kind_of?(MathViz::Term))
+      x
+    else
+      MathViz::Constant.new(x)
+    end
   end
 end
 
@@ -521,48 +552,12 @@ class MathViz::Input < MathViz::Constant
   end
 end
 
-# Top level object.
-# part 2/2
-class MathViz
-  # Comment that identifies a set of inputs.  Subsequent measured values will be marked as #input
-  def When(desc)
-    @@default_term = Input
-  end
-
-  # Comment that identifies a set of constants.  Subsequent measured values will be marked as #const
-  def Given(desc)
-    @@default_term = Constant
-  end
-
-  # Comment that identifies a section of calculations on the inputs and constants.
-  def Then(desc)
-    @@default_term = Constant
-  end
-
-  # Comment which reads a little better than repetition.
-  def And(desc)
-  end
-
-  def self.default_term
-    @@default_term ||= Constant
-  end
-end
-
 # n-ary operators
 class MathViz::Operation < MathViz::Term
   def initialize(op, *operands)
     super()
     @op = op
-    @operands = operands.map{|x| term(x)}
-  end
-
-  # Turn the object into a MathViz::Term (MathViz::Constant) if isn't already a MathViz::Term.  This allows for operator parameters to be primitive values without needing MathViz#const, MathViz#input, or units.
-  def term(x)
-    if (x.kind_of?(MathViz::Term))
-      x
-    else
-      MathViz::Constant.new(x)
-    end
+    @operands = operands.map{|x| MathViz.term(x)}
   end
 
   # Debugging method; returns string of names and values

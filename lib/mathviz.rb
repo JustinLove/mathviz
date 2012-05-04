@@ -53,7 +53,7 @@ class MathViz
     #puts MathViz::Term.list_terms(@env).map {|t| t.long}
     graph = GraphvizR.new @name
     graph = MathViz::Term.list_terms(@env).inject(graph) {|g, t|
-      t.to_dot(g)
+      t.collapse.first.to_dot(g)
       g
     }
 
@@ -428,8 +428,8 @@ class MathViz::Term
     !@name
   end
 
-  def operation?
-    false
+  def collapse(parentop = nil)
+    [self]
   end
 
   private
@@ -564,12 +564,6 @@ class MathViz::Operation < MathViz::Term
     @operands = operands.map{|x| MathViz.term(x)}
   end
 
-  attr_reader :op
-
-  def operation?
-    true
-  end
-
   # Debugging method; returns string of names and values
   def long
     n = @name && (@name + " = ")
@@ -625,6 +619,15 @@ class MathViz::Operation < MathViz::Term
 
   def finite?
     @operands.all?(&:finite?)
+  end
+
+  def collapse(parentop = nil)
+    @operands.map! {|x| x.collapse(@op)}.flatten!
+    if anonymous? && parentop == @op
+      @operands
+    else
+      [self]
+    end
   end
 end
 

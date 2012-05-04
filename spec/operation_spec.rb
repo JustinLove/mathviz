@@ -5,7 +5,7 @@ module MathViz::Units
 end
 
 describe MathViz::Operation do
-  describe MathViz::Operation::Unary do
+  describe 'unary' do
     it "can floor infinity" do
       (MathViz::Constant.new(1.0/0).floor).data.should == "Infinity"
     end
@@ -15,7 +15,7 @@ describe MathViz::Operation do
     end
   end
 
-  describe MathViz::Operation::Binary do
+  describe 'binary' do
     it "reports ints as ints" do
       (MathViz::Constant.new(1) * 2).data.should == "2"
     end

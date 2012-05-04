@@ -314,14 +314,14 @@ class MathViz::Term
   # Define op as a binary operator
   def self.binop(op)
     define_method(op) do |c|
-      MathViz::Operation::Binary.new(self, op, c)
+      MathViz::Operation.new(op, self, c)
     end
   end
 
   # Define op as an unary operator
   def self.unop(op)
     define_method(op) do
-      MathViz::Operation::Unary.new(self, op)
+      MathViz::Operation.new(op, self)
     end
   end
 
@@ -502,7 +502,7 @@ class MathViz::Constant < MathViz::Term
 
   # Forward to contained object
   def finite?
-    @a.finite?
+    @a.respond_to?(:finite?) ? @a.finite? : true
   end
 end
 
@@ -548,8 +548,14 @@ class MathViz
   end
 end
 
-# Base class for MathViz::Operation::Binary and MathViz::Operation::Unary
+# n-ary operators
 class MathViz::Operation < MathViz::Term
+  def initialize(op, *operands)
+    super()
+    @op = op
+    @operands = operands.map{|x| term(x)}
+  end
+
   # Turn the object into a MathViz::Term (MathViz::Constant) if isn't already a MathViz::Term.  This allows for operator parameters to be primitive values without needing MathViz#const, MathViz#input, or units.
   def term(x)
     if (x.kind_of?(MathViz::Term))
@@ -559,72 +565,10 @@ class MathViz::Operation < MathViz::Term
     end
   end
 
-  # Graphviz node shape
-  def shape
-    :box
-  end
-
-  # Default Graphviz node color.
-  def color
-    :red
-  end
-
-  def link_from(g, other)
-    (g[other.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
-    other.to_dot(g) unless other.generated?
-  end
-end
-
-# Display and processing for single-value operators
-class MathViz::Operation::Unary < MathViz::Operation
-  def initialize(a, op)
-    super()
-    @a = term(a)
-    @op = op
-  end
-
-  # Debugging method; return string of name and value.
-  def long
-    n = @name && (@name + " = ")
-    "(#{n}#{@a} #{@op} = #{to_value})"
-  end
-
-  # Extend Graphviz g with a representation of this object, and incoming connections
-  def to_dot(g)
-    super
-    link_from(g, @a)
-  end
-
-  # Apply the operator to create the derived value.
-  def to_value
-    return MathViz::Infinity unless @a.to_value.finite?
-    @a.to_value.__send__(@op)
-  end
-
-  # Forward to contained value
-  def units
-    @a.units
-  end
-
-  # Forward to contained value
-  def constant?
-    @a.constant?
-  end
-end
-
-# Display and processing for two-value operators
-class MathViz::Operation::Binary < MathViz::Operation
-  def initialize(a, op, b)
-    super()
-    @a = term(a)
-    @op = op
-    @b = term(b)
-  end
-
   # Debugging method; returns string of names and values
   def long
     n = @name && (@name + " = ")
-    "(#{n}#{@a} #{@op} #{@b} = #{to_value})"
+    "(#{n}#{@op} #{@operands.join(',')} = #{to_value})"
   end
 
   # Graphviz node shape; differentiates comparison operators
@@ -647,25 +591,34 @@ class MathViz::Operation::Binary < MathViz::Operation
     end
   end
 
+  def link_from(g, other)
+    (g[other.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
+    other.to_dot(g) unless other.generated?
+  end
+
   # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
-    link_from(g, @a)
-    link_from(g, @b)
+    @operands.each {|x| link_from(g, x)}
   end
 
   # Apply the operator to create the derived value.
   def to_value
-    @a.to_value.__send__(@op, @b.to_value)
+    return MathViz::Infinity unless finite?
+    @operands.map(&:to_value).reduce(&@op)
   end
 
   # Apply the operator to create the derived units.
   def units
-    @a.units.__send__(@op, @b.units)
+    @operands.map(&:units).reduce(&@op)
   end
 
   # True only if both operands are #constant?
   def constant?
-    @a.constant? && @b.constant?
+    @operands.all?(&:constant?)
+  end
+
+  def finite?
+    @operands.all?(&:finite?)
   end
 end

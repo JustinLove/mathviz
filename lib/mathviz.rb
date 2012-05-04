@@ -424,6 +424,14 @@ class MathViz::Term
     !name.nil?
   end
 
+  def anonymous?
+    !@name
+  end
+
+  def operation?
+    false
+  end
+
   private
   @@anon_master = 'A'
 
@@ -437,10 +445,6 @@ class MathViz::Term
       #puts "#{self.object_id} anon #{@anon}"
       @anon
     end
-  end
-
-  def anonymous?
-    !@name
   end
 
   public
@@ -558,6 +562,12 @@ class MathViz::Operation < MathViz::Term
     super()
     @op = op
     @operands = operands.map{|x| MathViz.term(x)}
+  end
+
+  attr_reader :op
+
+  def operation?
+    true
   end
 
   # Debugging method; returns string of names and values

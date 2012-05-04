@@ -589,15 +589,20 @@ class MathViz::Operation < MathViz::Term
     end
   end
 
-  def link_from(g, other)
-    (g[other.to_s] >> g[node]) [:arrowhead => :normal, :headlabel => @op.to_s, :labeldistance => '2']
+  def link_from(g, other, style, label)
+    if label
+      (g[other.to_s] >> g[node]) [:arrowhead => style, :headlabel => @op.to_s, :labeldistance => '2']
+    else
+      (g[other.to_s] >> g[node]) [:arrowhead => style]
+    end
     other.to_dot(g) unless other.generated?
   end
 
   # Extend Graphviz g with a representation of this object, and incoming connections
   def to_dot(g)
     super
-    @operands.each {|x| link_from(g, x)}
+    link_from(g, @operands.first, :normal, false)
+    @operands.slice(1..-1).each {|x| link_from(g, x, :onormal, true)}
   end
 
   # Apply the operator to create the derived value.
@@ -635,5 +640,11 @@ class MathViz::Operation::Unary < MathViz::Operation
   def to_value
     return MathViz::Infinity unless finite?
     @operands.map(&:to_value).map(&@op).first
+  end
+
+  # Extend Graphviz g with a representation of this object, and incoming connections
+  def to_dot(g)
+    super
+    @operands.each {|x| link_from(g, x, :normal, true)}
   end
 end

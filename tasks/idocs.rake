@@ -4,6 +4,6 @@ end
 
 directory 'doc/examples'
 
-task :redocs do |t|
-  sh 'rdoc --exclude examples --exclude Gemfile --exclude Manifest.txt'
+task :redocs => [:clobber_docs] do |t|
+  sh 'rdoc lib README.rdoc'
 end

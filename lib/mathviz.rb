@@ -80,6 +80,7 @@ class MathViz
   def And(desc)
   end
 
+  # internal method
   def self.default_term
     @@default_term ||= Constant
   end
@@ -127,15 +128,15 @@ class MathViz::Unit
     alias_method other, :binary_operator
   end
 
-  binop :+
-  binop :-
-  binop :<
-  binop :>
-  binop :==
-  binop :max
-  binop :min
-  binop :&
-  binop :|
+  alias_method :+, :binary_operator
+  alias_method :-, :binary_operator
+  alias_method :<, :binary_operator
+  alias_method :>, :binary_operator
+  alias_method :==, :binary_operator
+  alias_method :max, :binary_operator
+  alias_method :min, :binary_operator
+  alias_method :&, :binary_operator
+  alias_method :|, :binary_operator
 
   def *(other)
     x = @unit.dup
@@ -306,6 +307,7 @@ end
 
 # Namespaced extensions
 module MathViz::Graphable
+  # graph node title
   def node
     to_s
   end
@@ -419,14 +421,17 @@ class MathViz::Term
     g[node] [:label => label, :shape => shape, :color => color, :style => style]
   end
 
+  # Helper to avoid duplicate nodes
   def generated?
     !name.nil?
   end
 
+  # Only valid after names have been assigned, which means not during graph construction
   def anonymous?
     !@name
   end
 
+  # Stub
   def collapse(parentop = nil)
     [self]
   end
@@ -589,6 +594,7 @@ class MathViz::Operation < MathViz::Term
     end
   end
 
+  # Draws edges, and ensure the from nodes is drawn
   def link_from(g, other, style, label)
     if label
       (g[other.to_s] >> g[node]) [:arrowhead => style, :headlabel => @op.to_s, :labeldistance => '2']
@@ -616,7 +622,6 @@ class MathViz::Operation < MathViz::Term
     @operands.map(&:units).reduce(&@op)
   end
 
-  # True only if both operands are #constant?
   def constant?
     @operands.all?(&:constant?)
   end
@@ -625,6 +630,7 @@ class MathViz::Operation < MathViz::Term
     @operands.all?(&:finite?)
   end
 
+  # Combine anonymous nodes with the same operator to simply graph
   def collapse(parentop = nil)
     @operands = @operands.flat_map {|x| x.collapse(@op)}
     if anonymous? && parentop == @op
@@ -635,6 +641,7 @@ class MathViz::Operation < MathViz::Term
   end
 end
 
+# Special cases for unary operators
 class MathViz::Operation::Unary < MathViz::Operation
   # Apply the operator to create the derived value.
   def to_value

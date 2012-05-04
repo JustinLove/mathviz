@@ -57,12 +57,11 @@ MathViz.new {
   ss_tax = income * ss
   medicare_tax = income * medicare
   welfare_tax = ss_tax + medicare_tax
-  adj_gross = income - ss_tax / 2 - medical
 
   itemized_deduction = property_tax + il_tax_paid + interest_paid + contributions
   deduction = itemized_deduction.max(standard_deduction)
   us_deductions = deduction + exception
-  us_taxable = pos(adj_gross - us_deductions)
+  us_taxable = pos(income - ss_tax/2 - medical - us_deductions)
 
   # this removes some noise from the graph
   applicable_brackets = tax_brackets.select do |rate, bracket|

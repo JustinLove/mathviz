@@ -10,7 +10,7 @@ Turn simple equations (a = b * c) into GraphViz dot files showing relationships,
 
 == FEATURES/PROBLEMS:
 
-* Adds one method to Object and several to Numeric (some direct, some by Measurable and Unit.)  If you use units of measure, each unit will appear on Numeric via module Unit.
+* Adds one method to Object (by way of Graphable) and several to Numeric (by way Measurable, Unit, and NumericExtensions)  If you use units of measure, each unit will appear on Numeric via module Unit.
 * MathViz produces textual .dot files.  You will need a viewer which supports dot files directly, or Graphviz to convert them to images yourself.
 
 == SYNOPSIS:

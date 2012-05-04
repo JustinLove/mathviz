@@ -321,7 +321,7 @@ class MathViz::Term
   # Define op as an unary operator
   def self.unop(op)
     define_method(op) do
-      MathViz::Operation.new(op, self)
+      MathViz::Operation::Unary.new(op, self)
     end
   end
 
@@ -620,5 +620,13 @@ class MathViz::Operation < MathViz::Term
 
   def finite?
     @operands.all?(&:finite?)
+  end
+end
+
+class MathViz::Operation::Unary < MathViz::Operation
+  # Apply the operator to create the derived value.
+  def to_value
+    return MathViz::Infinity unless finite?
+    @operands.map(&:to_value).map(&@op).first
   end
 end

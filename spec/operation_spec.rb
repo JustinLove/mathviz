@@ -6,6 +6,10 @@ end
 
 describe MathViz::Operation do
   describe 'unary' do
+    it "does something" do
+      (MathViz::Constant.new(0.5).floor).data.should == "0"
+    end
+
     it "can floor infinity" do
       (MathViz::Constant.new(1.0/0).floor).data.should == "Infinity"
     end

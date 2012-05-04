@@ -52,9 +52,8 @@ class MathViz
     MathViz::Term.name_terms!(@env)
     #puts MathViz::Term.list_terms(@env).map {|t| t.long}
     graph = GraphvizR.new @name
-    graph = MathViz::Term.list_terms(@env).inject(graph) {|g, t|
-      t.collapse.first.to_dot(g)
-      g
+    MathViz::Term.list_terms(@env).flat_map(&:collapse).each {|t|
+      t.to_dot(graph)
     }
 
     filename = @name + '.dot'
@@ -174,7 +173,7 @@ class MathViz::Unit
 
   # Produce a string of multiplied terms
   def stream(units)
-    x = units.map {|u,power| [u] * power.abs }.flatten.join('*')
+    x = units.flat_map {|u,power| [u] * power.abs }.join('*')
     if (x.empty?)
       return nil
     else
@@ -622,7 +621,7 @@ class MathViz::Operation < MathViz::Term
   end
 
   def collapse(parentop = nil)
-    @operands.map! {|x| x.collapse(@op)}.flatten!
+    @operands = @operands.flat_map {|x| x.collapse(@op)}
     if anonymous? && parentop == @op
       @operands
     else
